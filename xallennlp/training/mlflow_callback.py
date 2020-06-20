@@ -6,7 +6,7 @@ from typing import Any, Dict
 from allennlp.training.trainer import EpochCallback, GradientDescentTrainer
 import mlflow
 
-from xallennlp.utils import flatten_dict_for_mlflow_log
+from xallennlp.utils import flatten_dict_for_mlflow_log, str_to_timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +23,10 @@ class MLflowMetrics(EpochCallback):
         if mlflow.active_run() is None:
             logger.warning("MLflow active run not found."
                            " Recommend to use 'train-with-mlflow' command.")
+
+        if "trainig_duration" in metrics:
+            trainig_duration = str_to_timedelta(metrics["trainig_duration"])
+            metrics["trainig_duration"] = trainig_duration.total_seconds()
 
         flattened_metrics = flatten_dict_for_mlflow_log(metrics)
 
