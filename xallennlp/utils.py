@@ -4,7 +4,8 @@ import re
 
 import flatten_dict
 
-REGEX_TIMEDELTA = re.compile(r"(?:(\d+) days?, )?(\d+):(\d+):(\d+).(\d+)?")
+REGEX_TIMEDELTA = re.compile(
+    r"(?:(\d+) days?, )?(\d+):(\d+):(\d+)(?:\.(\d+))?")
 
 
 def flatten_dict_for_mlflow_log(data: Dict[str, Any]) -> Dict[str, Any]:
@@ -19,7 +20,9 @@ def str_to_timedelta(delta_str: str) -> datetime.timedelta:
     if not match:
         raise ValueError(f"invalid timedelta format: {delta_str}")
 
-    days, hours, minutes, seconds, micros = (int(x) for x in match.groups())
+    nums = tuple(int(x or 0) for x in match.groups())
+    days, hours, minutes, seconds, micros = nums
+
     seconds += 3600 * hours + 60 * minutes
 
     return datetime.timedelta(days=days, seconds=seconds, microseconds=micros)

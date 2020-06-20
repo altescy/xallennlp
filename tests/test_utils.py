@@ -12,7 +12,7 @@ def test_flatten_dict_for_mlflow_log():
 
 
 def test_str_to_timedelta():
-    delta = datetime.timedelta(1, 2, 3)
+    delta = datetime.timedelta(1, 2, 0)
     delta_str = str(delta)
 
     recon_delta = str_to_timedelta(delta_str)
