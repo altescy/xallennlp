@@ -44,4 +44,4 @@ def log_nonnumerical_metric(key: str, value: Any, epoch: int):
         with open(temppath, "w") as f:
             f.write(repr(value))
 
-        mlflow.log_artifact(temppath, f"metrics/epoch_{epoch}/{key}")
+        mlflow.log_artifact(temppath, f"metrics/epoch_{epoch}")
