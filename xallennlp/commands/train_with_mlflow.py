@@ -18,14 +18,17 @@ class TrainWithMLflow(Subcommand):
             self,
             parser: argparse._SubParsersAction) -> argparse.ArgumentParser:
         description = """Train the model with MLflow Tracking."""
-        subparser = parser.add_parser(self.name,
-                                      description=description,
-                                      help="Train a model with MLflow.")
+        subparser = parser.add_parser(
+            self.name,
+            description=description,
+            help="Train a model with MLflow.",
+        )
 
         subparser.add_argument(
             "param_path",
             type=str,
-            help="path to parameter file describing the model to be trained")
+            help="path to parameter file describing the model to be trained",
+        )
 
         subparser.add_argument(
             "-e",
@@ -39,7 +42,7 @@ class TrainWithMLflow(Subcommand):
             "-s",
             "--serialization-dir",
             type=str,
-            default="out",
+            default="output",
             help="directory in which to save the model and its logs",
         )
 
@@ -123,14 +126,17 @@ def train_model_from_args(args: argparse.Namespace):
 
 
 def get_serialization_dir(args: argparse.Namespace) -> str:
-    run_info = mlflow.active_run().info
-    artifact_uri = urlparse(run_info.artifact_uri)
-
     if args.recover:
         return str(args.serialization_dir)
 
+    run_info = mlflow.active_run().info
+    artifact_uri = urlparse(run_info.artifact_uri)
+
     if artifact_uri.scheme == "file":
         return str(artifact_uri.path)
+
+    if not args.serialization_dir:
+        raise RuntimeError("serialization_dir is required")
 
     return str(
         os.path.join(
