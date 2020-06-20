@@ -93,7 +93,6 @@ def train_model_from_args(args: argparse.Namespace):
     params_dict = params.as_flat_dict()
     params_dict.update({"args": vars(args)})
     flattened_params = flatten_dict_for_mlflow_log(params_dict)
-    print(flattened_params)
 
     with mlflow.start_run():
         mlflow.log_params(flattened_params)
