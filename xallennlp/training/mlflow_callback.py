@@ -24,9 +24,9 @@ class MLflowMetrics(EpochCallback):
             logger.warning("MLflow active run not found."
                            " Recommend to use 'train-with-mlflow' command.")
 
-        if "trainig_duration" in metrics:
-            trainig_duration = str_to_timedelta(metrics["trainig_duration"])
-            metrics["trainig_duration"] = trainig_duration.total_seconds()
+        if "training_duration" in metrics:
+            trainig_duration = str_to_timedelta(metrics["training_duration"])
+            metrics["training_duration"] = trainig_duration.total_seconds()
 
         flattened_metrics = flatten_dict_for_mlflow_log(metrics)
 
