@@ -102,19 +102,20 @@ def train_model_from_args(args: argparse.Namespace):
 
         serialization_dir = get_serialization_dir(args)
 
-        model = train_model(
-            params=params,
-            serialization_dir=serialization_dir,
-            file_friendly_logging=args.file_friendly_logging,
-            recover=args.recover,
-            force=args.force,
-            node_rank=args.node_rank,
-            include_package=args.include_package,
-            dry_run=args.dry_run,
-        )
-
-        if not args.dry_run:
-            mlflow.log_artifacts(serialization_dir)
+        try:
+            train_model(
+                params=params,
+                serialization_dir=serialization_dir,
+                file_friendly_logging=args.file_friendly_logging,
+                recover=args.recover,
+                force=args.force,
+                node_rank=args.node_rank,
+                include_package=args.include_package,
+                dry_run=args.dry_run,
+            )
+        finally:
+            if not args.dry_run:
+                mlflow.log_artifacts(serialization_dir)
 
 
 def get_serialization_dir(args: argparse.Namespace) -> str:
