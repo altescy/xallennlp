@@ -31,14 +31,6 @@ class TrainWithMLflow(Subcommand):
         )
 
         subparser.add_argument(
-            "-e",
-            "--experiment",
-            type=str,
-            default="",
-            help="name of mlflow experiment",
-        )
-
-        subparser.add_argument(
             "-s",
             "--serialization-dir",
             type=str,
@@ -104,9 +96,6 @@ def train_model_from_args(args: argparse.Namespace):
     params_dict = params.as_flat_dict()
     params_dict.update({"args": vars(args)})
     flattened_params = flatten_dict_for_mlflow_log(params_dict)
-
-    if args.experiment:
-        mlflow.set_experiment(args.experiment)
 
     with mlflow.start_run():
         mlflow.log_params(flattened_params)
