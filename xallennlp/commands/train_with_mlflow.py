@@ -35,7 +35,8 @@ class TrainWithMLflow(Subcommand):
             "--serialization-dir",
             type=str,
             default="output",
-            help="directory in which to save the model and its logs",
+            help=
+            "directory in which to save the artifacts before MLflow logging",
         )
 
         subparser.add_argument(
@@ -43,7 +44,8 @@ class TrainWithMLflow(Subcommand):
             "--recover",
             action="store_true",
             default=False,
-            help="recover training from the state in serialization_dir",
+            help=
+            "recover training: MLFLOW_EXPERIMENT_ID and MLFLOW_RUN_ID are required",
         )
 
         subparser.add_argument(
@@ -119,9 +121,6 @@ def train_model_from_args(args: argparse.Namespace):
 
 
 def get_serialization_dir(args: argparse.Namespace) -> str:
-    if args.recover:
-        return str(args.serialization_dir)
-
     run_info = mlflow.active_run().info
     artifact_uri = urlparse(run_info.artifact_uri)
 
