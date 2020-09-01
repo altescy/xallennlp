@@ -14,8 +14,8 @@
         },
         "max_sequence_length": 400
     },
-    "train_data_path": "data/imdb_corpus.jsonl",
-    "validation_data_path": "data/imdb_corpus.jsonl",
+    "train_data_path": "tests/fixtures/data/imdb_corpus.jsonl",
+    "validation_data_path": "tests/fixtures/data/imdb_corpus.jsonl",
     "model": {
         "type": "basic_classifier",
         "text_field_embedder": {
