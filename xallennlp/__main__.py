@@ -9,8 +9,8 @@ from allennlp.common.util import import_module_and_submodules
 if os.environ.get("ALLENNLP_DEBUG"):
     LEVEL = logging.DEBUG
 else:
-    level_name = os.environ.get("ALLENNLP_LOG_LEVEL")
-    LEVEL = logging._nameToLevel.get(level_name, logging.INFO)
+    level_name = os.environ.get("ALLENNLP_LOG_LEVEL", "INFO")
+    LEVEL = logging._nameToLevel.get(level_name, logging.INFO)  # pylint: disable=protected-access
 
 sys.path.insert(
     0, os.path.dirname(os.path.abspath(os.path.join(__file__, os.pardir))))

@@ -1,8 +1,17 @@
 PWD=$(shell pwd)
 PYTHON=poetry run python
+PYLINT=poetry run pylint
+PYLINTRC=$(PWD)/.pylintrc
+MYPY=poetry run mypy
 PYTEST=poetry run pytest
 MODULE=xallennlp
 
+
+lint:
+	$(PYLINT) --rcfile=$(PYLINTRC) $(MODULE)
+
+mypy:
+	$(MYPY) $(MODULE)
 
 test:
 	PYTHONPATH=$(PWD) $(PYTEST)

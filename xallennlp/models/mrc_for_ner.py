@@ -1,12 +1,11 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 from allennlp.data.vocabulary import Vocabulary
 from allennlp.models import Model
 from allennlp.modules import FeedForward, TextFieldEmbedder, TimeDistributed
-from allennlp.modules.seq2seq_encoders import PassThroughEncoder, Seq2SeqEncoder
+from allennlp.modules.seq2seq_encoders import Seq2SeqEncoder
 from allennlp.nn import util, InitializerApplicator, RegularizerApplicator
 from allennlp.training.metrics import BooleanAccuracy, FBetaMeasure
-import numpy as np
 import torch
 
 

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Dict, TypeVar
 import datetime
 import re
 
@@ -7,10 +7,14 @@ import flatten_dict
 REGEX_TIMEDELTA = re.compile(
     r"(?:(\d+) days?, )?(\d+):(\d+):(\d+)(?:\.(\d+))?")
 
+T = TypeVar("T")
 
-def flatten_dict_for_mlflow_log(data: Dict[str, Any]) -> Dict[str, Any]:
-    flattened_data = flatten_dict.flatten(data, reducer="dot")
-    flattened_data = {str(key): value for key, value in flattened_data.items()}
+
+def flatten_dict_for_mlflow_log(data: Dict[str, T]) -> Dict[str, T]:
+    flattened_data: Dict[str, T] = {
+        str(key): value
+        for key, value in flatten_dict.flatten(data, reducer="dot").items()
+    }
     return flattened_data
 
 

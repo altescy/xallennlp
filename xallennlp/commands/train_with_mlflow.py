@@ -16,7 +16,8 @@ class TrainWithMLflow(Subcommand):
     @overrides
     def add_subparser(
             self,
-            parser: argparse._SubParsersAction) -> argparse.ArgumentParser:
+            parser: argparse._SubParsersAction,  # pylint: disable=protected-access
+    ) -> argparse.ArgumentParser:
         description = """Train the model with MLflow Tracking."""
         subparser = parser.add_parser(
             self.name,
