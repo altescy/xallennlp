@@ -5,8 +5,8 @@
         "context_tokenizer": "whitespace",
         "query_tokenizer": "spacy",
     },
-    "train_data_path": "data/mrc_ner.json",
-    "validation_data_path": "data/mrc_ner.json",
+    "train_data_path": "tests/fixtures/data/mrc_ner.json",
+    "validation_data_path": "tests/fixtures/data/mrc_ner.json",
     "model": {
         "type": "mrc_for_ner",
         "text_field_embedder": {
