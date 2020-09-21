@@ -3,6 +3,7 @@ from xallennlp.data.dataset_readers import MrcForNerDatasetReader
 
 class TestMrcForNerDatasetReader:
     def setup(self):
+        # pylint: disable=attribute-defined-outside-init
         self.context = "xinhua news agency , shanghai , august 31st , by reporter jierong zhou"
         self.query = (
             "geographical political entities are geographical regions defined by "

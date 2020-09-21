@@ -11,6 +11,8 @@ from allennlp.data.token_indexers import SingleIdTokenIndexer, TokenIndexer
 import numpy as np
 from overrides import overrides
 
+logger = logging.getLogger(__name__)
+
 
 @DatasetReader.register("mrc_for_ner")
 class MrcForNerDatasetReader(DatasetReader):
@@ -73,6 +75,9 @@ class MrcForNerDatasetReader(DatasetReader):
         fields["span"] = ListField([span_field])
 
         if "start_position" in metadata:
+            assert "end_position" in metadata
+            assert "span_position" in metadata
+
             start_position = metadata.pop("start_position")
             end_position = metadata.pop("end_position")
             span_position = metadata.pop("span_position")
@@ -113,13 +118,24 @@ class MrcForNerDatasetReader(DatasetReader):
 
     @staticmethod
     def _parse_span_position(span_position_str: str) -> Tuple[int, int]:
-        left_str, right_str = span_position_str.split(",")
+        """
+        Convert a span position string "start,end" to a tuple (start, end).
+        """
+        splitted_position = span_position_str.split(",")
+        assert len(splitted_position) == 2
+
+        left_str, right_str = splitted_position
+
         left_index = int(left_str.strip())
         right_index = int(right_str.strip())
+
         return (left_index, right_index)
 
-    def _span_position_to_array(self, span_position: List[str],
-                                length: int) -> np.ndarray:
+    def _span_position_to_array(
+        self,
+        span_position: List[str],
+        length: int,
+    ) -> np.ndarray:
         ret = np.zeros((length, length), dtype=np.int)
         for span_position_str in span_position:
             left, right = self._parse_span_position(span_position_str)
