@@ -1,0 +1,34 @@
+[
+  {
+    "context": "xinhua news agency , shanghai , august 31st , by reporter jierong zhou",
+    "end_position": [
+      5
+    ],
+    "entity_label": "GPE",
+    "impossible": false,
+    "qas_id": "0.1",
+    "query": "geographical political entities are geographical regions defined by political and or social groups such as countries, nations, regions, cities, states, government and its people. ",
+    "span_position": [
+      "4,5"
+    ],
+    "start_position": [
+      4
+    ]
+  },
+  {
+    "context": "xinhua news agency , shanghai , august 31st , by reporter jierong zhou",
+    "end_position": [
+      3
+    ],
+    "entity_label": "ORG",
+    "impossible": false,
+    "qas_id": "0.2",
+    "query": "organization entities are limited to companies, corporations, agencies, institutions and other groups of people.",
+    "span_position": [
+      "0,3"
+    ],
+    "start_position": [
+      0
+    ]
+  }
+]
