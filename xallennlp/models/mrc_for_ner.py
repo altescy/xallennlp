@@ -5,7 +5,7 @@ from allennlp.models import Model
 from allennlp.modules import FeedForward, TextFieldEmbedder, TimeDistributed
 from allennlp.modules.seq2seq_encoders import PassThroughEncoder, Seq2SeqEncoder
 from allennlp.nn import util, InitializerApplicator, RegularizerApplicator
-from allennlp.training.metrics import BooleanAccuracy, F1Measure
+from allennlp.training.metrics import BooleanAccuracy, FBetaMeasure
 import numpy as np
 import torch
 
@@ -29,7 +29,7 @@ class MrcForNer(Model):
         self,
         vocab: Vocabulary,
         text_field_embedder: TextFieldEmbedder,
-        context_layer: Seq2SeqEncoder = None,
+        context_layer: Seq2SeqEncoder,
         start_feedforward: FeedForward = None,
         end_feedforward: FeedForward = None,
         span_feedforward: FeedForward = None,
@@ -44,35 +44,61 @@ class MrcForNer(Model):
 
         self._text_field_embedder = text_field_embedder
 
-        embedding_dim = self._text_field_embedder.get_output_dim()
-        self._context_layer = context_layer \
-            or PassThroughEncoder(embedding_dim)
-        self._start_feedforward = start_feedforward \
-            or PassThroughFeedForward(embedding_dim)
-        self._end_feedforward = end_feedforward \
-            or PassThroughFeedForward(embedding_dim)
-        self._span_feedforward = span_feedforward \
-            or PassThroughFeedForward(embedding_dim)
+        self._context_layer = context_layer
+
+        self._start_scorer = torch.nn.Sequential(
+            TimeDistributed(start_feedforward),
+            TimeDistributed(
+                torch.nn.Linear(
+                    start_feedforward.get_output_dim(),
+                    2,
+                )),
+        ) if start_feedforward is not None else TimeDistributed(
+            torch.nn.Linear(
+                context_layer.get_output_dim(),
+                2,
+            ))
+
+        self._end_scorer = torch.nn.Sequential(
+            TimeDistributed(end_feedforward),
+            TimeDistributed(
+                torch.nn.Linear(
+                    end_feedforward.get_output_dim(),
+                    2,
+                )),
+        ) if end_feedforward is not None else TimeDistributed(
+            torch.nn.Linear(
+                context_layer.get_output_dim(),
+                2,
+            ))
+
+        self._span_scorer = torch.nn.Sequential(
+            TimeDistributed(span_feedforward),
+            TimeDistributed(
+                torch.nn.Linear(
+                    span_feedforward.get_output_dim(),
+                    2,
+                )),
+        ) if span_feedforward is not None else TimeDistributed(
+            torch.nn.Linear(
+                2 * context_layer.get_output_dim(),
+                1,
+            ))
+
         self._start_loss_weight = start_loss_weight
         self._end_loss_weight = end_loss_weight
         self._span_loss_weight = span_loss_weight
-
-        self._start_output = torch.nn.Linear(
-            self._start_feedforward.get_output_dim(), 2)
-        self._end_output = torch.nn.Linear(
-            self._end_feedforward.get_output_dim(), 2)
-        self._span_output = torch.nn.Linear(
-            2 * self._span_feedforward.get_output_dim(), 1)
 
         if lexical_dropout > 0:
             self._lexical_dropout = torch.nn.Dropout(p=lexical_dropout)
         else:
             self._lexical_dropout = lambda x: x  # type: ignore
 
-        self._span_loss = torch.nn.BCEWithLogitsLoss()
+        self._endpoint_loss = torch.nn.CrossEntropyLoss(reduction="sum")
+        self._span_loss = torch.nn.BCEWithLogitsLoss(reduction="sum")
 
         self._accuracy = BooleanAccuracy()
-        self._f1measure = F1Measure(positive_label=1)
+        self._f1measure = FBetaMeasure(beta=1.0, average="micro")
 
         initializer(self)
 
@@ -111,6 +137,7 @@ class MrcForNer(Model):
         # Shape: (batch_size, sequence_length, embedding_size)
         text_embeddings = self._lexical_dropout(
             self._text_field_embedder(text))
+        # Shape: (batch_size, sequence_length)
         text_mask = util.get_text_field_mask(text).float()
 
         # Shape: (batch_size, 1, context_length, embedding_size)
@@ -126,73 +153,73 @@ class MrcForNer(Model):
         context_mask = context_mask.squeeze(1)
 
         # Shape: (batch_size, context_length, 2)
-        start_logits = self._start_output(
-            self._start_feedforward(context_embeddings))
+        start_logits = self._start_scorer(context_embeddings)
         # Shape: (batch_size, context_length, 2)
-        end_logits = self._end_output(
-            self._end_feedforward(context_embeddings))
+        end_logits = self._end_scorer(context_embeddings)
 
-        # Shape: (batch_size, context_length, context_length, 2 * embedding_size)
+        # Shape: (batch_size, context_length, context_length, 1)
         # Shape: (batch_size, context_length, context_length)
-        span_embeddings, span_mask = \
-            self._compute_span_embeddings(context_embeddings, context_mask)
+        span_logits, span_mask = \
+            self._compute_span_scores(context_embeddings, context_mask)
 
-        # Shape: (batch_size, sequence_length, sequence_length)
-        span_logits = self._span_output(
-            self._span_feedforward(span_embeddings)).squeeze()
+        # Shape: (batch_size, context_length)
+        start_predictions = start_logits.argmax(-1)
+        # Shape: (batch_size, context_length)
+        end_predictions = end_logits.argmax(-1)
+        # Shape: (batch_size, context_length, context_length)
+        span_predictions = (span_logits.squeeze(-1) > 0).long()
 
         output_dict = {
             "start_logits": start_logits,
             "end_logits": end_logits,
             "span_logits": span_logits,
+            "start_predictions": start_predictions,
+            "end_predictions": end_predictions,
+            "span_predictions": span_predictions,
             "context_mask": context_mask,
             "span_mask": span_mask,
         }
 
         if (start_position is not None and end_position is not None
                 and span_position is not None):
-            start_loss = util.sequence_cross_entropy_with_logits(
-                start_logits,
-                start_position,
-                context_mask,
+            context_mask = context_mask.bool()
+            start_loss = self._endpoint_loss(
+                start_logits[context_mask],
+                start_position[context_mask],
             )
-            end_loss = util.sequence_cross_entropy_with_logits(
-                end_logits,
-                end_position,
-                context_mask,
+            end_loss = self._endpoint_loss(
+                end_logits[context_mask],
+                end_position[context_mask],
             )
             span_loss = self._span_loss(
-                span_logits.masked_select(span_mask),
-                span_position.masked_select(span_mask).float(),
+                span_logits.squeeze(-1)[span_mask],
+                span_position[span_mask].float(),
             )
             loss = (self._start_loss_weight * start_loss +
                     self._end_loss_weight * end_loss +
                     self._span_loss_weight * span_loss)
 
-            start_preds = start_logits.argmax(-1)
-            end_preds = end_logits.argmax(-1)
-            span_preds = (span_logits.sigmoid() > 0.5).long()
-
             self._accuracy(
-                span_preds *
-                torch.einsum("bi,bj->bij", start_preds, end_preds),
+                span_predictions *
+                torch.einsum("bi,bj->bij", start_predictions, end_predictions),
                 span_position,
                 span_mask,
             )
+            # F1 measure computed here is not a common metrics as known as
+            # span-based F1 used for named entity recognition.
             self._f1measure(
-                torch.cat([
-                    span_logits.sigmoid().unsqueeze(-1),
-                    span_logits.new_zeros(span_logits.size()).unsqueeze(-1),
-                ],
-                          dim=-1),
+                torch.cat(
+                    [
+                        span_logits.sigmoid(),
+                        span_logits.new_zeros(span_logits.size()),
+                    ],
+                    dim=-1,
+                ),
                 span_position,
                 span_mask,
             )
 
             output_dict["loss"] = loss
-            output_dict["start_loss"] = start_loss
-            output_dict["end_loss"] = end_loss
-            output_dict["span_loss"] = span_loss
 
         if metadata and "label" in metadata[0]:
             output_dict["label"] = [x["label"]
@@ -202,15 +229,13 @@ class MrcForNer(Model):
 
     def get_metrics(self, reset: bool = False) -> Dict[str, float]:
         accuracy = self._accuracy.get_metric(reset)
-        precision, recall, f1 = self._f1measure.get_metric(reset)
+        f1metrics = self._f1measure.get_metric(reset)
         return {
             "accuracy": accuracy,
-            "precision": precision,
-            "recall": recall,
-            "f1": f1,
+            **f1metrics,
         }
 
-    def _compute_span_embeddings(
+    def _compute_span_scores(
         self,
         context_embeddings: torch.Tensor,
         context_mask: torch.BoolTensor,
@@ -230,6 +255,7 @@ class MrcForNer(Model):
             context_mask.unsqueeze(2).expand(batch_size, context_length, context_length) * \
             context_mask.unsqueeze(1).expand(batch_size, context_length, context_length)
 
-        span_embeddings = self._span_feedforward(span_embeddings)
+        # Shape: (batch_size, context_length, context_length, 1)
+        span_embeddings = self._span_scorer(span_embeddings)
 
         return span_embeddings, span_mask
