@@ -7,7 +7,7 @@ class TestMrcForNer(ModelTestCase):
     def setup(self):
         super().setup_method()
         self.config_file = "tests/fixtures/configs/mrc_for_ner.jsonnet"
-        self.dataset_file = "tests/fixtures/data/mrc_ner.json"
+        self.dataset_file = "tests/fixtures/data/mrc_ner.jsonl"
         self.set_up_model(self.config_file, self.dataset_file)
 
     def test_mrc_for_ner_can_train_save_and_load(self):

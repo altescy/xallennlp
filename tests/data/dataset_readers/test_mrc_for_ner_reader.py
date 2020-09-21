@@ -17,7 +17,7 @@ class TestMrcForNerDatasetReader:
         self.reader = MrcForNerDatasetReader()
 
     def test_read(self):
-        list(self.reader.read("tests/fixtures/data/mrc_ner.json"))
+        list(self.reader.read("tests/fixtures/data/mrc_ner.jsonl"))
 
     def test_text_to_instance(self):
         instance = self.reader.text_to_instance(self.context, self.query,

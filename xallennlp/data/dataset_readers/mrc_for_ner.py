@@ -39,11 +39,11 @@ class MrcForNerDatasetReader(DatasetReader):
         file_path = cached_path(file_path)
 
         with open(file_path, "r") as f:
-            items = json.load(f)
-            for item in items:
-                context: str = item.pop("context")
-                query: str = item.pop("query")
-                metadata: Dict[str, Any] = item
+            for line in f:
+                example = json.loads(line)
+                context: str = example.pop("context")
+                query: str = example.pop("query")
+                metadata: Dict[str, Any] = example
 
                 yield self.text_to_instance(
                     context,
