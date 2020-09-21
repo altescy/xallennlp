@@ -1,3 +1,5 @@
+local embedding_dim = 10;
+
 {
     "dataset_reader": {
         "lazy": false,
@@ -13,10 +15,14 @@
             "token_embedders": {
                 "token": {
                     "type": "embedding",
-                    "embedding_dim": 10,
+                    "embedding_dim": embedding_dim,
                     "trainable": true,
                 }
             }
+        },
+        "context_layer": {
+          "type": "pass_through",
+          "input_dim": embedding_dim,
         },
     },
     "data_loader": {
@@ -30,8 +36,8 @@
             "type": "adam",
             "lr": 0.001
         },
-        "validation_metric": "+f1",
-        "num_epochs": 20,
+        "validation_metric": "+fscore",
+        "num_epochs": 5,
         "grad_norm": 10.0,
         "patience": 5,
         "cuda_device": -1
