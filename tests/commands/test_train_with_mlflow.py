@@ -1,10 +1,8 @@
 import argparse
-import os
 from pathlib import Path
 import tempfile
 
 from allennlp.common.util import import_module_and_submodules
-from allennlp.commands import create_parser
 import mlflow
 import yaml
 
@@ -15,7 +13,9 @@ import_module_and_submodules("xallennlp")
 
 class TestTrainWithMLflow:
     def setup(self):
-        self.parser = create_parser()
+        self.parser = argparse.ArgumentParser(description="Testing")
+        subparsers = self.parser.add_subparsers(title="Commands", metavar="")
+        TrainWithMLflow().add_subparser(subparsers)
 
     def test_train_with_mlflow_from_args(self):
         with tempfile.TemporaryDirectory() as tempdir:
@@ -28,6 +28,7 @@ class TestTrainWithMLflow:
                 "train-with-mlflow",
                 "configs/basic_classifier.jsonnet",
             ])
+            args.include_package = []
             train_model_from_args(args)
 
             with open(tempdir / "0" / "meta.yaml") as f:

@@ -1,5 +1,8 @@
 import argparse
+import datetime
+import logging
 import os
+import uuid
 from urllib.parse import urlparse
 
 from allennlp.commands.subcommand import Subcommand
@@ -10,13 +13,16 @@ from overrides import overrides
 
 from xallennlp.utils import flatten_dict_for_mlflow_log
 
+logger = logging.getLogger(__name__)
+
 
 @Subcommand.register("train-with-mlflow")
 class TrainWithMLflow(Subcommand):
     @overrides
     def add_subparser(
             self,
-            parser: argparse._SubParsersAction) -> argparse.ArgumentParser:
+            parser: argparse._SubParsersAction,  # pylint: disable=protected-access
+    ) -> argparse.ArgumentParser:
         description = """Train the model with MLflow Tracking."""
         subparser = parser.add_parser(
             self.name,
@@ -34,7 +40,6 @@ class TrainWithMLflow(Subcommand):
             "-s",
             "--serialization-dir",
             type=str,
-            default="output",
             help=
             "directory in which to save the artifacts before MLflow logging",
         )
@@ -103,6 +108,7 @@ def train_model_from_args(args: argparse.Namespace):
         mlflow.log_params(flattened_params)
 
         serialization_dir = get_serialization_dir(args)
+        logging.info("serialization director: %s", serialization_dir)
 
         try:
             train_model(
@@ -127,12 +133,21 @@ def get_serialization_dir(args: argparse.Namespace) -> str:
     if artifact_uri.scheme == "file":
         return str(artifact_uri.path)
 
-    if not args.serialization_dir:
-        raise RuntimeError("serialization_dir is required")
+    if args.serialization_dir:
+        serialization_dir = args.serialization_dir
+    else:
+        serialization_dir = generate_unique_serialization_dir()
 
     return str(
         os.path.join(
-            args.serialization_dir,
+            serialization_dir,
             run_info.experiment_id,
             run_info.run_id,
         ))
+
+
+def generate_unique_serialization_dir() -> str:
+    current_time = datetime.datetime.now()
+    timestamp = current_time.strftime("%Y%m%d_%H%M%S_%f")
+    dirid = uuid.uuid4().hex
+    return f"/tmp/xallennlp/output/{timestamp}_{dirid}"
