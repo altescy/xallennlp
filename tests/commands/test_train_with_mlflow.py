@@ -26,7 +26,7 @@ class TestTrainWithMLflow:
 
             args = self.parser.parse_args([
                 "train-with-mlflow",
-                "configs/basic_classifier.jsonnet",
+                "tests/fixtures/configs/basic_classifier.jsonnet",
             ])
             args.include_package = []
             train_model_from_args(args)
