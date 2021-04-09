@@ -79,8 +79,10 @@ class MrcForNerDatasetReader(DatasetReader):
             assert "span_position" in metadata
 
             start_position = metadata.pop("start_position")
-            end_position = metadata.pop("end_position")
+            end_position = [x - 1 for x in metadata.pop("end_position")]
             span_position = metadata.pop("span_position")
+
+            # print(f"{start_position}, {end_position} / {len(context_tokens)}")
 
             start_position_array = self._position_to_array(
                 start_position, len(context_tokens))
@@ -139,5 +141,6 @@ class MrcForNerDatasetReader(DatasetReader):
         ret = np.zeros((length, length), dtype=np.int)
         for span_position_str in span_position:
             left, right = self._parse_span_position(span_position_str)
+            right -= 1
             ret[left, right] = 1
         return ret
