@@ -97,7 +97,7 @@ class MrcForNer(Model):
         self._span_loss = torch.nn.BCEWithLogitsLoss(reduction="sum")
 
         self._accuracy = BooleanAccuracy()
-        self._f1measure = FBetaMeasure(beta=1.0, average="micro")
+        self._f1measure = FBetaMeasure(beta=1.0, average="macro")
 
         initializer(self)
 
@@ -133,6 +133,7 @@ class MrcForNer(Model):
                 A metadata dictionary for each instance in the batch. We use the
                 "label" key from this dictionary, which is the label of query.
         """
+
         # Shape: (batch_size, sequence_length, embedding_size)
         text_embeddings = self._lexical_dropout(
             self._text_field_embedder(text))
@@ -150,6 +151,9 @@ class MrcForNer(Model):
         context_embeddings = context_embeddings.squeeze(1)
         # Shape: (batch_size, context_length)
         context_mask = context_mask.squeeze(1)
+
+        batch_size = context_embeddings.size(0)
+        context_length = context_embeddings.size(1)
 
         # Shape: (batch_size, context_length, 2)
         start_logits = self._start_scorer(context_embeddings)
@@ -200,7 +204,8 @@ class MrcForNer(Model):
 
             self._accuracy(
                 span_predictions *
-                torch.einsum("bi,bj->bij", start_predictions, end_predictions),
+                start_predictions.reshape(batch_size, context_length, 1) *
+                end_predictions.reshape(batch_size, 1, context_length),
                 span_position,
                 span_mask,
             )
@@ -209,8 +214,8 @@ class MrcForNer(Model):
             self._f1measure(
                 torch.cat(
                     [
-                        span_logits.sigmoid(),
                         span_logits.new_zeros(span_logits.size()),
+                        span_logits,
                     ],
                     dim=-1,
                 ),
