@@ -5,12 +5,11 @@ import os
 import uuid
 from urllib.parse import urlparse
 
+import mlflow
 from allennlp.commands.subcommand import Subcommand
 from allennlp.commands.train import train_model
 from allennlp.common import Params
-import mlflow
 from overrides import overrides
-
 from xallennlp.utils import flatten_dict_for_mlflow_log
 
 logger = logging.getLogger(__name__)
@@ -20,8 +19,8 @@ logger = logging.getLogger(__name__)
 class TrainWithMLflow(Subcommand):
     @overrides
     def add_subparser(
-            self,
-            parser: argparse._SubParsersAction,  # pylint: disable=protected-access
+        self,
+        parser: argparse._SubParsersAction,  # pylint: disable=protected-access
     ) -> argparse.ArgumentParser:
         description = """Train the model with MLflow Tracking."""
         subparser = parser.add_parser(
@@ -40,8 +39,7 @@ class TrainWithMLflow(Subcommand):
             "-s",
             "--serialization-dir",
             type=str,
-            help=
-            "directory in which to save the artifacts before MLflow logging",
+            help="directory in which to save the artifacts before MLflow logging",
         )
 
         subparser.add_argument(
@@ -49,8 +47,7 @@ class TrainWithMLflow(Subcommand):
             "--recover",
             action="store_true",
             default=False,
-            help=
-            "recover training: MLFLOW_EXPERIMENT_ID and MLFLOW_RUN_ID are required",
+            help="recover training: MLFLOW_EXPERIMENT_ID and MLFLOW_RUN_ID are required",
         )
 
         subparser.add_argument(
@@ -66,29 +63,22 @@ class TrainWithMLflow(Subcommand):
             "--overrides",
             type=str,
             default="",
-            help=
-            "a JSON structure used to override the experiment configuration",
+            help="a JSON structure used to override the experiment configuration",
         )
 
         subparser.add_argument(
             "--file-friendly-logging",
             action="store_true",
             default=False,
-            help=
-            "outputs tqdm status on separate lines and slows tqdm refresh rate",
+            help="outputs tqdm status on separate lines and slows tqdm refresh rate",
         )
 
-        subparser.add_argument(
-            "--node-rank",
-            type=int,
-            default=0,
-            help="rank of this node in the distributed setup")
+        subparser.add_argument("--node-rank", type=int, default=0, help="rank of this node in the distributed setup")
 
         subparser.add_argument(
             "--dry-run",
             action="store_true",
-            help=
-            "do not train a model, but create a vocabulary, show dataset statistics and "
+            help="do not train a model, but create a vocabulary, show dataset statistics and "
             "other training information",
         )
 
@@ -143,7 +133,8 @@ def get_serialization_dir(args: argparse.Namespace) -> str:
             serialization_dir,
             run_info.experiment_id,
             run_info.run_id,
-        ))
+        )
+    )
 
 
 def generate_unique_serialization_dir() -> str:

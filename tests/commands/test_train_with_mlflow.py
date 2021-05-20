@@ -1,11 +1,10 @@
 import argparse
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
-from allennlp.common.util import import_module_and_submodules
 import mlflow
 import yaml
-
+from allennlp.common.util import import_module_and_submodules
 from xallennlp.commands.train_with_mlflow import TrainWithMLflow, train_model_from_args
 
 import_module_and_submodules("xallennlp")
@@ -24,10 +23,12 @@ class TestTrainWithMLflow:
             mlflow.set_tracking_uri(f"file://{tempdir}")
             mlflow.set_experiment("test")
 
-            args = self.parser.parse_args([
-                "train-with-mlflow",
-                "configs/basic_classifier.jsonnet",
-            ])
+            args = self.parser.parse_args(
+                [
+                    "train-with-mlflow",
+                    "configs/basic_classifier.jsonnet",
+                ]
+            )
             args.include_package = []
             train_model_from_args(args)
 

@@ -1,8 +1,8 @@
 import logging
 from typing import Union
 
-from allennlp.training import Checkpointer, Trainer
 import mlflow
+from allennlp.training import Checkpointer, Trainer
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,6 @@ class MLflowCheckpointer(Checkpointer):
         )
 
         if mlflow.active_run() is None:
-            logger.warning("MLflow active run not found."
-                           " Recommend to use 'train-with-mlflow' command.")
+            logger.warning("MLflow active run not found." " Recommend to use 'train-with-mlflow' command.")
 
         mlflow.log_artifacts(self._serialization_dir)

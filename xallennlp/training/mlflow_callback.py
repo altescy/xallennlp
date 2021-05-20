@@ -3,9 +3,8 @@ import os
 import tempfile
 from typing import Any, Dict
 
-from allennlp.training.trainer import EpochCallback, GradientDescentTrainer
 import mlflow
-
+from allennlp.training.trainer import EpochCallback, GradientDescentTrainer
 from xallennlp.utils import flatten_dict_for_mlflow_log, str_to_timedelta
 
 logger = logging.getLogger(__name__)
@@ -14,15 +13,14 @@ logger = logging.getLogger(__name__)
 @EpochCallback.register("mlflow_metrics")
 class MLflowMetrics(EpochCallback):
     def __call__(
-            self,
-            trainer: GradientDescentTrainer,
-            metrics: Dict[str, Any],
-            epoch: int,
-            is_master: bool,
+        self,
+        trainer: GradientDescentTrainer,
+        metrics: Dict[str, Any],
+        epoch: int,
+        is_master: bool,
     ) -> None:
         if mlflow.active_run() is None:
-            logger.warning("MLflow active run not found."
-                           " Recommend to use 'train-with-mlflow' command.")
+            logger.warning("MLflow active run not found." " Recommend to use 'train-with-mlflow' command.")
 
         if "training_duration" in metrics:
             trainig_duration = str_to_timedelta(metrics["training_duration"])

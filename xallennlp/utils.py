@@ -1,11 +1,10 @@
-from typing import Any, Dict
 import datetime
 import re
+from typing import Any, Dict
 
 import flatten_dict
 
-REGEX_TIMEDELTA = re.compile(
-    r"(?:(\d+) days?, )?(\d+):(\d+):(\d+)(?:\.(\d+))?")
+REGEX_TIMEDELTA = re.compile(r"(?:(\d+) days?, )?(\d+):(\d+):(\d+)(?:\.(\d+))?")
 
 
 def flatten_dict_for_mlflow_log(data: Dict[str, Any]) -> Dict[str, Any]:
