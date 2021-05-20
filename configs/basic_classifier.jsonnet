@@ -1,6 +1,5 @@
 {
     "dataset_reader": {
-        "lazy": false,
         "type": "text_classification_json",
         "tokenizer": {
             "type": "whitespace"
@@ -42,7 +41,7 @@
     },
     "trainer": {
         "checkpointer": "mlflow",
-        "epoch_callbacks": ["mlflow_metrics"],
+        "callbacks": ["mlflow"],
         "optimizer": {
             "type": "adam",
             "lr": 0.001
