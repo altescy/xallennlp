@@ -7,11 +7,11 @@ MODULE=xallennlp
 
 .PHONY: format
 format:
-	PYTHONPATH=$(PWD) $(PYSEN) run format
+	$(PYSEN) run format
 
 .PHONY: lint
 lint:
-	PYTHONPATH=$(PWD) $(PYSEN) run lint
+	$(PYSEN) run lint
 
 .PHONY: test
 test:
