@@ -8,7 +8,7 @@ def test_flatten_dict_for_mlflow_log() -> None:
     flattened_data = flatten_dict_for_mlflow_log(data)
 
     assert flattened_data["x.y"] == "a"
-    assert flattened_data["1"] == 123
+    assert flattened_data["z"] == 123
 
 
 def test_str_to_timedelta() -> None:
