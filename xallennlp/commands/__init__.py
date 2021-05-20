@@ -1,1 +1,1 @@
-import xallennlp.commands.train_with_mlflow
+import xallennlp.commands.train_with_mlflow  # noqa: F401

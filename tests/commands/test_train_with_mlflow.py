@@ -11,12 +11,12 @@ import_module_and_submodules("xallennlp")
 
 
 class TestTrainWithMLflow:
-    def setup(self):
+    def setup(self) -> None:
         self.parser = argparse.ArgumentParser(description="Testing")
         subparsers = self.parser.add_subparsers(title="Commands", metavar="")
         TrainWithMLflow().add_subparser(subparsers)
 
-    def test_train_with_mlflow_from_args(self):
+    def test_train_with_mlflow_from_args(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             tempdir = Path(tempdir)
 

@@ -9,7 +9,7 @@ from allennlp.common.util import import_module_and_submodules
 if os.environ.get("ALLENNLP_DEBUG"):
     LEVEL = logging.DEBUG
 else:
-    level_name = os.environ.get("ALLENNLP_LOG_LEVEL")
+    level_name = os.environ.get("ALLENNLP_LOG_LEVEL", "INFO")
     LEVEL = logging._nameToLevel.get(level_name, logging.INFO)
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(os.path.join(__file__, os.pardir))))
@@ -19,7 +19,7 @@ _filelock_logger = logging.getLogger("filelock")
 _filelock_logger.setLevel(logging.WARNING)
 
 
-def run():
+def run() -> None:
     import_module_and_submodules("xallennlp")
     main(prog="xallennlp")
 

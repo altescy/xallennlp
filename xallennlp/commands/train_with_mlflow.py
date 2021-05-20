@@ -9,7 +9,6 @@ import mlflow
 from allennlp.commands.subcommand import Subcommand
 from allennlp.commands.train import train_model
 from allennlp.common import Params
-from overrides import overrides
 from xallennlp.utils import flatten_dict_for_mlflow_log
 
 logger = logging.getLogger(__name__)
@@ -17,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 @Subcommand.register("train-with-mlflow")
 class TrainWithMLflow(Subcommand):
-    @overrides
     def add_subparser(
         self,
         parser: argparse._SubParsersAction,  # pylint: disable=protected-access
@@ -87,7 +85,7 @@ class TrainWithMLflow(Subcommand):
         return subparser
 
 
-def train_model_from_args(args: argparse.Namespace):
+def train_model_from_args(args: argparse.Namespace) -> None:
     params = Params.from_file(args.param_path, args.overrides)
 
     params_dict = params.as_flat_dict()

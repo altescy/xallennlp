@@ -1,2 +1,2 @@
-import xallennlp.commands
-import xallennlp.training
+import xallennlp.commands  # noqa: F401
+import xallennlp.training  # noqa: F401
