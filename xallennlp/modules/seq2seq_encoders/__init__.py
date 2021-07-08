@@ -1,1 +1,2 @@
 from xallennlp.modules.seq2seq_encoders.highway_seq2seq_encoder import HighwaySeq2SeqEncoder  # noqa: F401
+from xallennlp.modules.seq2seq_encoders.residual_seq2seq_encoder import ResidualSeq2SeqEncoder  # noqa: F401
