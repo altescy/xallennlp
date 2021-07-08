@@ -1,11 +1,14 @@
 import logging
 import os
 import tempfile
-from typing import Any, Dict
+from typing import TYPE_CHECKING, Any, Dict
 
 import mlflow
 from allennlp.training.callbacks import TrainerCallback
-from allennlp.training.trainer import GradientDescentTrainer
+
+if TYPE_CHECKING:
+    from allennlp.training.gradient_descent_trainer import GradientDescentTrainer
+
 from xallennlp.utils import flatten_dict_for_mlflow_log, str_to_timedelta
 
 logger = logging.getLogger(__name__)
@@ -21,7 +24,7 @@ class MLflowMetrics(TrainerCallback):
 
     def on_epoch(  # type: ignore
         self,
-        trainer: GradientDescentTrainer,
+        trainer: "GradientDescentTrainer",
         metrics: Dict[str, Any],
         epoch: int,
         is_primary: bool = True,

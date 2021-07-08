@@ -8,6 +8,7 @@ from allennlp.common.util import pad_sequence_to_length
 from allennlp.data.token_indexers.token_indexer import IndexedTokenList, TokenIndexer
 from allennlp.data.tokenizers import Token
 from allennlp.data.vocabulary import Vocabulary
+from numpy.typing import NDArray
 
 _DEFAULT_VALUE = "THIS IS A REALLY UNLIKELY VALUE THAT HAS TO BE A STRING"
 
@@ -34,14 +35,14 @@ class FastTextTokenIndexer(TokenIndexer):
     def count_vocab_items(self, token: Token, counter: Dict[str, Dict[str, int]]) -> None:
         return
 
-    def tokens_to_indices(self, tokens: List[Token], vocabulary: Vocabulary) -> Dict[str, List[numpy.ndarray]]:
-        indices: List[numpy.ndarray] = [self._get_token_embedding(token) for token in tokens]
+    def tokens_to_indices(self, tokens: List[Token], vocabulary: Vocabulary) -> Dict[str, List[NDArray[numpy.float64]]]:
+        indices: List[NDArray[numpy.float64]] = [self._get_token_embedding(token) for token in tokens]
         return {"tokens": indices}
 
     def as_padded_tensor_dict(
         self, tokens: IndexedTokenList, padding_lengths: Dict[str, int]
     ) -> Dict[str, torch.Tensor]:
-        def padding_token() -> numpy.ndarray:
+        def padding_token() -> NDArray[numpy.float64]:
             return numpy.zeros(self._hidden_dim, dtype=numpy.float32)
 
         tensor = torch.FloatTensor(
@@ -52,12 +53,12 @@ class FastTextTokenIndexer(TokenIndexer):
     def get_empty_token_list(self) -> IndexedTokenList:
         return {"tokens": []}
 
-    def _get_token_embedding(self, token: Token) -> numpy.ndarray:
+    def _get_token_embedding(self, token: Token) -> NDArray[numpy.float64]:
         text = self._get_feature_value(token)
-        embedding = cast(numpy.ndarray, self._fasttext[text])
+        embedding = cast(NDArray[numpy.float64], self._fasttext[text])
 
         if self._normalize:
-            embedding = embedding / (numpy.linalg.norm(embedding) + 1e-10)
+            embedding = embedding / (numpy.linalg.norm(embedding) + 1e-10)  # type: ignore
 
         return embedding
 
