@@ -1,9 +1,11 @@
+import shutil
+import tempfile
 from typing import Dict, List, cast
 
 import fasttext
 import numpy
 import torch
-from allennlp.common.file_utils import cached_path
+from allennlp.common.file_utils import open_compressed
 from allennlp.common.util import pad_sequence_to_length
 from allennlp.data.token_indexers.token_indexer import IndexedTokenList, TokenIndexer
 from allennlp.data.tokenizers import Token
@@ -24,13 +26,20 @@ class FastTextTokenIndexer(TokenIndexer):
         normalize: bool = True,
     ) -> None:
         super().__init__(token_min_padding_length)
-        pretrained_filename = cached_path(pretrained_filename)
 
-        self._fasttext = fasttext.load_model(pretrained_filename)
+        self._fasttext = self._load_pretrained_model(pretrained_filename)
         self._hidden_dim = self._fasttext.get_dimension()
         self._feature_name = feature_name
         self._default_value = default_value
         self._normalize = normalize
+
+    @staticmethod
+    def _load_pretrained_model(filename: str) -> fasttext.FastText:
+        with tempfile.NamedTemporaryFile("wb") as dc_file:
+            with open_compressed(filename, "rb", encoding=None) as fp:
+                shutil.copyfileobj(fp, dc_file)
+            model = fasttext.load_model(dc_file.name)
+        return model
 
     def count_vocab_items(self, token: Token, counter: Dict[str, Dict[str, int]]) -> None:
         return
