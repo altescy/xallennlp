@@ -11,7 +11,16 @@ class PreprocessReader(DatasetReader):
         self,
         reader: DatasetReader,
         preprocessors: Dict[str, Preprocessor],  # type: ignore[type-arg]
+        **kwargs: Any,
     ) -> None:
+        super_kwargs = {
+            "max_instances": reader.max_instances,
+            "manual_distributed_sharding": reader.manual_distributed_sharding,
+            "manual_multiprocess_sharding": reader.manual_multiprocess_sharding,
+            "serialization_dir": reader.serialization_dir,
+        }
+        super_kwargs.update(kwargs)
+        super().__init__(**super_kwargs)  # type: ignore
         self._reader = reader
         self._preprocessors = preprocessors
         self._text_to_instance = self._reader.text_to_instance

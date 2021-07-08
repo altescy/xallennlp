@@ -1,5 +1,4 @@
 import torch
-
 from xallennlp.modules.distances import CosineDistance, EuclideanDistance
 
 
