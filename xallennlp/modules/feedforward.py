@@ -17,15 +17,15 @@ class FeedForward(torch.nn.Module, FromParams):
         dropout: Union[float, List[float]] = 0.0,
     ) -> None:
 
-        super().__init__()
+        super().__init__()  # type: ignore
         if not isinstance(hidden_dims, list):
-            hidden_dims = [hidden_dims] * num_layers  # type: ignore
+            hidden_dims = [hidden_dims] * num_layers
         if not isinstance(activations, list):
-            activations = [activations] * num_layers  # type: ignore
+            activations = [activations] * num_layers
         if not isinstance(biases, list):
             biases = [biases] * num_layers
         if not isinstance(dropout, list):
-            dropout = [dropout] * num_layers  # type: ignore
+            dropout = [dropout] * num_layers
         if len(hidden_dims) != num_layers:
             raise ConfigurationError("len(hidden_dims) (%d) != num_layers (%d)" % (len(hidden_dims), num_layers))
         if len(activations) != num_layers:
@@ -45,14 +45,13 @@ class FeedForward(torch.nn.Module, FromParams):
         self._output_dim = hidden_dims[-1]
         self.input_dim = input_dim
 
-    def get_output_dim(self):
+    def get_output_dim(self) -> int:
         return self._output_dim
 
-    def get_input_dim(self):
+    def get_input_dim(self) -> int:
         return self.input_dim
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-
         output = inputs
         for layer, activation, dropout in zip(self._linear_layers, self._activations, self._dropout):
             output = dropout(activation(layer(output)))

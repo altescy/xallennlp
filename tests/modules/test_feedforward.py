@@ -1,6 +1,5 @@
 import torch
 from allennlp.nn.activations import SwishActivation
-
 from xallennlp.modules.feedforward import FeedForward
 
 
