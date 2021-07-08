@@ -4,7 +4,6 @@ import fasttext
 from allennlp.data.fields import TextField
 from allennlp.data.tokenizers import Token
 from allennlp.data.vocabulary import Vocabulary
-
 from xallennlp.data.token_indexers import FastTextTokenIndexer
 
 
