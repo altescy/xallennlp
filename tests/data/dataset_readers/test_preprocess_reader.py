@@ -1,6 +1,5 @@
 from allennlp.data.dataset_readers import TextClassificationJsonReader
 from allennlp.data.fields import TextField
-
 from xallennlp.data.dataset_readers import PreprocessReader
 from xallennlp.data.preprocessors import Lowercase
 

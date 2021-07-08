@@ -2,7 +2,6 @@ from typing import Any, Dict, Iterator
 
 from allennlp.data.dataset_readers import DatasetReader
 from allennlp.data.instance import Instance
-
 from xallennlp.data.preprocessors import Preprocessor
 
 
