@@ -1,6 +1,5 @@
 import torch
 from allennlp.modules.seq2seq_encoders.pytorch_seq2seq_wrapper import LstmSeq2SeqEncoder
-
 from xallennlp.modules.seq2seq_encoders import HighwaySeq2SeqEncoder
 
 
