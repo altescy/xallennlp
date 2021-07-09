@@ -31,5 +31,8 @@ class PreprocessReader(DatasetReader):
             yield instance
 
     def text_to_instance(self, *args: Any, **kwargs: Any) -> Instance:
-        kwargs = {key: self._preprocessors[key](value) for key, value in kwargs.items()}
+        kwargs = {
+            key: self._preprocessors[key](value) if key in self._preprocessors else value
+            for key, value in kwargs.items()
+        }
         return self._text_to_instance(*args, **kwargs)  # type: ignore
