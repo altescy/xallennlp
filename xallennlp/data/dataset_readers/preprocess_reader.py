@@ -9,25 +9,25 @@ from xallennlp.data.preprocessors import Preprocessor
 class PreprocessReader(DatasetReader):
     def __init__(
         self,
-        reader: DatasetReader,
+        base_reader: DatasetReader,
         preprocessors: Dict[str, Preprocessor],  # type: ignore[type-arg]
         **kwargs: Any,
     ) -> None:
-        super_kwargs = {
-            "max_instances": reader.max_instances,
-            "manual_distributed_sharding": reader.manual_distributed_sharding,
-            "manual_multiprocess_sharding": reader.manual_multiprocess_sharding,
-            "serialization_dir": reader.serialization_dir,
-        }
-        super_kwargs.update(kwargs)
-        super().__init__(**super_kwargs)  # type: ignore
-        self._reader = reader
+        super().__init__(
+            manual_distributed_sharding=True,
+            manual_multiprocess_sharding=True,
+            **kwargs,
+        )
+        self.reader = base_reader
         self._preprocessors = preprocessors
-        self._text_to_instance = self._reader.text_to_instance
-        self._reader.text_to_instance = self.text_to_instance  # type: ignore
+        self._text_to_instance = self.reader.text_to_instance
+        self.reader.text_to_instance = self.text_to_instance  # type: ignore
+
+        self.reader._set_worker_info(None)
+        self.reader._set_distributed_info(None)
 
     def _read(self, file_path: str) -> Iterator[Instance]:
-        for instance in self._reader._read(file_path):
+        for instance in self.reader._read(file_path):
             yield instance
 
     def text_to_instance(self, *args: Any, **kwargs: Any) -> Instance:
@@ -36,3 +36,6 @@ class PreprocessReader(DatasetReader):
             for key, value in kwargs.items()
         }
         return self._text_to_instance(*args, **kwargs)  # type: ignore
+
+    def apply_token_indexers(self, instance: Instance) -> None:
+        self.reader.apply_token_indexers(instance)
