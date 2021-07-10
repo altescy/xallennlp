@@ -36,18 +36,20 @@ class MLflowMetrics(TrainerCallback):
 
         flattened_metrics = flatten_dict_for_mlflow_log(metrics)
 
+        step = trainer._total_batches_completed
+
         for key, value in flattened_metrics.items():
             if isinstance(value, (int, float)):
-                mlflow.log_metric(key, float(value))
+                mlflow.log_metric(key, float(value), step=step)
             else:
-                log_nonnumerical_metric(key, value, epoch)
+                log_nonnumerical_metric(key, value, step)
 
 
-def log_nonnumerical_metric(key: str, value: Any, epoch: int) -> None:
+def log_nonnumerical_metric(key: str, value: Any, step: int) -> None:
     with tempfile.TemporaryDirectory() as tempdir:
         temppath = os.path.join(tempdir, key)
 
         with open(temppath, "w") as f:
             f.write(repr(value))
 
-        mlflow.log_artifact(temppath, f"metrics/epoch_{epoch}")
+        mlflow.log_artifact(temppath, f"metrics/step_{step}")
