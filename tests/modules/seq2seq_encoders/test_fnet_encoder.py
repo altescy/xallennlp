@@ -1,5 +1,4 @@
 import torch
-
 from xallennlp.modules.seq2seq_encoders import FNetEncoder
 
 

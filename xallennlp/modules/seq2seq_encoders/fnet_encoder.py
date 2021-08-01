@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, cast
 
 import torch
 from allennlp.modules.seq2seq_encoders import Seq2SeqEncoder
@@ -27,8 +27,14 @@ class FNetLayer(torch.nn.Module):
         self._layer_nomralize_fft = LayerNorm(input_dim)
         self._layer_nomralize_ffn = LayerNorm(input_dim)
 
-    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self,
+        inputs: torch.Tensor,
+        mask: Optional[torch.FloatTensor] = None,
+    ) -> torch.Tensor:
         output = inputs
+        if mask is not None:
+            output = output * mask
 
         # Fourier Transform
         output_fft = inputs
@@ -37,12 +43,16 @@ class FNetLayer(torch.nn.Module):
         output_fft = output_fft.real
 
         output = self._layer_nomralize_fft(output_fft + output)
+        if mask is not None:
+            output = output * mask
 
         # Feed Forward
         output_ffn = output
         output_ffn = self._feedforward(output_ffn)
 
         output = self._layer_nomralize_ffn(output_ffn + output)
+        if mask is not None:
+            output = output * mask
         return output
 
 
@@ -114,9 +124,9 @@ class FNetEncoder(Seq2SeqEncoder):
             output = output + self._positional_embedding(position_ids)
 
         if mask is not None:
-            output = output * mask.unsqueeze(-1).float()
+            mask = cast(torch.FloatTensor, mask.unsqueeze(-1).float())  # type: ignore
 
         for layer, dropout in zip(self._fnet_layers, self._dropout_layers):
-            output = dropout(layer(output))
+            output = dropout(layer(output, mask))
 
         return output
