@@ -1,6 +1,9 @@
 import datetime
+from typing import cast
 
-from xallennlp.utils import flatten_dict_for_mlflow_log, str_to_timedelta
+import numpy.testing
+import torch
+from xallennlp.utils import flatten_dict_for_mlflow_log, masked_fft, masked_fourier_transform, str_to_timedelta
 
 
 def test_flatten_dict_for_mlflow_log() -> None:
@@ -18,3 +21,21 @@ def test_str_to_timedelta() -> None:
     recon_delta = str_to_timedelta(delta_str)
 
     assert recon_delta == delta
+
+
+def test_masked_fourier_transform() -> None:
+    inputs = torch.rand(3, 4, 5)
+    mask = cast(torch.BoolTensor, torch.ones(3, 4).bool())
+    output = masked_fourier_transform(inputs, mask).numpy()
+    desired = torch.fft.fft(inputs, dim=1).numpy()
+
+    numpy.testing.assert_allclose(output, desired, rtol=1e-5)  # type: ignore
+
+
+def test_masked_fft() -> None:
+    inputs = torch.rand(3, 4, 5)
+    mask = cast(torch.BoolTensor, torch.ones(3, 4).bool())
+    output = masked_fft(inputs, mask).numpy()
+    desired = torch.fft.fft(inputs, dim=1).numpy()
+
+    numpy.testing.assert_allclose(output, desired, rtol=1e-5)  # type: ignore
