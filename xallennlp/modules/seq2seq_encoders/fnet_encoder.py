@@ -1,4 +1,4 @@
-from typing import List, Optional, cast
+from typing import List, Optional
 
 import torch
 from allennlp.modules.seq2seq_encoders import Seq2SeqEncoder
@@ -6,6 +6,7 @@ from allennlp.modules.time_distributed import TimeDistributed
 from allennlp.modules.transformer.layer_norm import LayerNorm
 from allennlp.nn.activations import Activation, GeluFast
 from allennlp.nn.util import add_positional_features
+from xallennlp.utils import masked_fourier_transform
 
 
 class FNetLayer(torch.nn.Module):
@@ -30,29 +31,23 @@ class FNetLayer(torch.nn.Module):
     def forward(
         self,
         inputs: torch.Tensor,
-        mask: Optional[torch.FloatTensor] = None,
+        mask: Optional[torch.BoolTensor] = None,
     ) -> torch.Tensor:
         output = inputs
-        if mask is not None:
-            output = output * mask
 
         # Fourier Transform
         output_fft = inputs
         output_fft = torch.fft.fft(output_fft, dim=2)
-        output_fft = torch.fft.fft(output_fft, dim=1)
+        output_fft = masked_fourier_transform(output_fft, mask)
         output_fft = output_fft.real
 
         output = self._layer_nomralize_fft(output_fft + output)
-        if mask is not None:
-            output = output * mask
 
         # Feed Forward
         output_ffn = output
         output_ffn = self._feedforward(output_ffn)
 
         output = self._layer_nomralize_ffn(output_ffn + output)
-        if mask is not None:
-            output = output * mask
         return output
 
 
@@ -122,9 +117,6 @@ class FNetEncoder(Seq2SeqEncoder):
             position_ids = torch.arange(inputs.size(1), dtype=torch.long, device=output.device)
             position_ids = position_ids.unsqueeze(0).expand(inputs.shape[:-1])
             output = output + self._positional_embedding(position_ids)
-
-        if mask is not None:
-            mask = cast(torch.FloatTensor, mask.unsqueeze(-1).float())  # type: ignore
 
         for layer, dropout in zip(self._fnet_layers, self._dropout_layers):
             output = dropout(layer(output, mask))
