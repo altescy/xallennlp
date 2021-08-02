@@ -6,7 +6,7 @@ from allennlp.modules.time_distributed import TimeDistributed
 from allennlp.modules.transformer.layer_norm import LayerNorm
 from allennlp.nn.activations import Activation, GeluFast
 from allennlp.nn.util import add_positional_features
-from xallennlp.utils import masked_fourier_transform
+from xallennlp.utils import masked_fft
 
 
 class FNetLayer(torch.nn.Module):
@@ -38,7 +38,7 @@ class FNetLayer(torch.nn.Module):
         # Fourier Transform
         output_fft = inputs
         output_fft = torch.fft.fft(output_fft, dim=2)
-        output_fft = masked_fourier_transform(output_fft, mask)
+        output_fft = masked_fft(output_fft, mask)
         output_fft = output_fft.real
 
         output = self._layer_nomralize_fft(output_fft + output)

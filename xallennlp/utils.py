@@ -66,3 +66,26 @@ def masked_fourier_transform(
     )
 
     return output
+
+
+def masked_fft(
+    inputs: torch.Tensor,
+    mask: Optional[torch.BoolTensor] = None,
+) -> torch.Tensor:
+    if mask is None:
+        return cast(torch.Tensor, torch.fft.fft(inputs, dim=1))
+
+    batch_size, max_length, embedding_dim = inputs.size()
+
+    # Shape: (batch_size * embedding_dim, max_length)
+    flattened_inputs = inputs.transpose(1, 2).reshape(batch_size * embedding_dim, max_length)
+    # Shape: (batch_size * embedding_dim, max_length)
+    flattened_mask = mask.repeat_interleave(embedding_dim, dim=0)
+
+    lengths = flattened_mask.long().sum(1)
+    output = torch.zeros((batch_size * embedding_dim, max_length), dtype=torch.complex64).to(inputs.device)
+    for i, (x, l) in enumerate(zip(flattened_inputs, lengths)):
+        output[i, :l] = torch.fft.fft(x[:l])
+
+    output = output.view(batch_size, embedding_dim, max_length).transpose(1, 2)
+    return output
