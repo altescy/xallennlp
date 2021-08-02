@@ -3,7 +3,6 @@ from allennlp.modules.feedforward import FeedForward
 from allennlp.modules.seq2seq_encoders import LstmSeq2SeqEncoder
 from allennlp.modules.seq2vec_encoders import BagOfEmbeddingsEncoder
 from allennlp.nn.activations import SwishActivation
-
 from xallennlp.modules.seq2vec_encoders import ComposeSeq2VecEncoder
 
 
