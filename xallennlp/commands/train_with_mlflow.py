@@ -9,7 +9,6 @@ import mlflow
 from allennlp.commands.subcommand import Subcommand
 from allennlp.commands.train import train_model
 from allennlp.common import Params
-from xallennlp.utils import flatten_dict_for_mlflow_log
 
 logger = logging.getLogger(__name__)
 
@@ -88,30 +87,20 @@ class TrainWithMLflow(Subcommand):
 def train_model_from_args(args: argparse.Namespace) -> None:
     params = Params.from_file(args.param_path, args.overrides)
 
-    params_dict = params.as_flat_dict()
-    params_dict.update({"args": vars(args)})
-    flattened_params = flatten_dict_for_mlflow_log(params_dict)
-
     with mlflow.start_run():
-        mlflow.log_params(flattened_params)
-
         serialization_dir = get_serialization_dir(args)
         logging.info("serialization director: %s", serialization_dir)
 
-        try:
-            train_model(
-                params=params,
-                serialization_dir=serialization_dir,
-                file_friendly_logging=args.file_friendly_logging,
-                recover=args.recover,
-                force=args.force,
-                node_rank=args.node_rank,
-                include_package=args.include_package,
-                dry_run=args.dry_run,
-            )
-        finally:
-            if not args.dry_run:
-                mlflow.log_artifacts(serialization_dir)
+        train_model(
+            params=params,
+            serialization_dir=serialization_dir,
+            file_friendly_logging=args.file_friendly_logging,
+            recover=args.recover,
+            force=args.force,
+            node_rank=args.node_rank,
+            include_package=args.include_package,
+            dry_run=args.dry_run,
+        )
 
 
 def get_serialization_dir(args: argparse.Namespace) -> str:
