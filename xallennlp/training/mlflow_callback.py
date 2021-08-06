@@ -1,7 +1,8 @@
+import json
 import logging
 import os
 import tempfile
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import mlflow
 from allennlp.training.callbacks import TrainerCallback
@@ -21,6 +22,17 @@ class MLflowMetrics(TrainerCallback):
         serialization_dir: str,
     ) -> None:
         super().__init__(serialization_dir=serialization_dir)
+
+    def on_start(
+        self,
+        trainer: "GradientDescentTrainer",
+        is_primary: bool = True,
+        **kwargs: Any,
+    ) -> None:
+        with open(os.path.join(self.serialization_dir, "config.json")) as json_file:
+            config = flatten_dict_for_mlflow_log(json.load(json_file))
+
+        mlflow.log_params(config)
 
     def on_epoch(  # type: ignore
         self,
@@ -43,6 +55,16 @@ class MLflowMetrics(TrainerCallback):
                 mlflow.log_metric(key, float(value), step=step)
             else:
                 log_nonnumerical_metric(key, value, step)
+
+    def on_end(
+        self,
+        trainer: "GradientDescentTrainer",
+        metrics: Optional[Dict[str, Any]] = None,
+        epoch: Optional[int] = None,
+        is_primary: bool = True,
+        **kwargs: Any,
+    ) -> None:
+        mlflow.log_artifacts(self.serialization_dir)
 
 
 def log_nonnumerical_metric(key: str, value: Any, step: int) -> None:
