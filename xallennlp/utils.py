@@ -77,15 +77,12 @@ def masked_fft(
 
     batch_size, max_length, embedding_dim = inputs.size()
 
-    # Shape: (batch_size * embedding_dim, max_length)
-    flattened_inputs = inputs.transpose(1, 2).reshape(batch_size * embedding_dim, max_length)
-    # Shape: (batch_size * embedding_dim, max_length)
-    flattened_mask = mask.repeat_interleave(embedding_dim, dim=0)
+    lengths = mask.long().sum(dim=1)
+    output = torch.zeros(
+        (batch_size, max_length, embedding_dim), dtype=torch.complex64
+    ).to(inputs.device)
 
-    lengths = flattened_mask.long().sum(1)
-    output = torch.zeros((batch_size * embedding_dim, max_length), dtype=torch.complex64).to(inputs.device)
-    for i, (x, l) in enumerate(zip(flattened_inputs, lengths)):
-        output[i, :l] = torch.fft.fft(x[:l])
+    for i, (x, l) in enumerate(zip(inputs, lengths)):
+        output[i, :l, :] = torch.fft.fft(x[:l, :], dim=0)
 
-    output = output.view(batch_size, embedding_dim, max_length).transpose(1, 2)
     return output
