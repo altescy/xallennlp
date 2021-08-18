@@ -1,15 +1,11 @@
 import argparse
-import datetime
 import logging
-import os
-import uuid
-from urllib.parse import urlparse
 
 import mlflow
 from allennlp.commands.subcommand import Subcommand
 from allennlp.commands.train import train_model
 from allennlp.common import Params
-from xallennlp.utils import flatten_dict_for_mlflow_log
+from xallennlp.utils import flatten_dict_for_mlflow_log, get_serialization_dir
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +91,7 @@ def train_model_from_args(args: argparse.Namespace) -> None:
     with mlflow.start_run():
         mlflow.log_params(flattened_params)
 
-        serialization_dir = get_serialization_dir(args)
+        serialization_dir = get_serialization_dir(args.serialization_dir)
         logging.info("serialization director: %s", serialization_dir)
 
         try:
@@ -112,31 +108,3 @@ def train_model_from_args(args: argparse.Namespace) -> None:
         finally:
             if not args.dry_run:
                 mlflow.log_artifacts(serialization_dir)
-
-
-def get_serialization_dir(args: argparse.Namespace) -> str:
-    run_info = mlflow.active_run().info
-    artifact_uri = urlparse(run_info.artifact_uri)
-
-    if artifact_uri.scheme == "file":
-        return str(artifact_uri.path)
-
-    if args.serialization_dir:
-        serialization_dir = args.serialization_dir
-    else:
-        serialization_dir = generate_unique_serialization_dir()
-
-    return str(
-        os.path.join(
-            serialization_dir,
-            run_info.experiment_id,
-            run_info.run_id,
-        )
-    )
-
-
-def generate_unique_serialization_dir() -> str:
-    current_time = datetime.datetime.now()
-    timestamp = current_time.strftime("%Y%m%d_%H%M%S_%f")
-    dirid = uuid.uuid4().hex
-    return f"/tmp/xallennlp/output/{timestamp}_{dirid}"
