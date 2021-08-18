@@ -1,0 +1,10 @@
+[
+    {
+    "type": "int",
+    "attributes": {
+      "name": "embedding_dim",
+      "low": 5,
+      "high": 8
+    }
+  }
+]
