@@ -6,7 +6,6 @@ from urllib.parse import urlparse
 
 import flatten_dict
 import mlflow
-import numpy
 import torch
 
 REGEX_TIMEDELTA = re.compile(r"(?:(\d+) days?, )?(\d+):(\d+):(\d+)(?:\.(\d+))?")

@@ -5,8 +5,7 @@ import mlflow
 from allennlp.commands.subcommand import Subcommand
 from allennlp.commands.train import train_model
 from allennlp.common import Params
-from xallennlp.utils import flatten_dict_for_mlflow_log, get_serialization_dir
-
+from xallennlp.utils import get_serialization_dir
 
 logger = logging.getLogger(__name__)
 
