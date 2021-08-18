@@ -36,3 +36,7 @@ class TestTrainWithMLflow:
                 meta = yaml.safe_load(f)
 
             assert meta["name"] == "test"
+
+            run_id = [path.name for path in (tempdir / "0").glob("*") if path.is_dir()][0]
+            assert (tempdir / "0" / run_id / "artifacts" / "config.json").is_file()
+            assert (tempdir / "0" / run_id / "artifacts" / "model.tar.gz").is_file()
