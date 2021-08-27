@@ -3,7 +3,7 @@ from typing import cast
 
 import numpy.testing
 import torch
-from xallennlp.utils import flatten_dict_for_mlflow_log, masked_fft, str_to_timedelta
+from xallennlp.utils import flatten_dict_for_mlflow_log, masked_fft, masked_pool, str_to_timedelta
 
 
 def test_flatten_dict_for_mlflow_log() -> None:
@@ -30,3 +30,12 @@ def test_masked_fft() -> None:
     desired = torch.fft.fft(inputs, dim=1).numpy()
 
     numpy.testing.assert_allclose(output, desired, rtol=1e-5)  # type: ignore
+
+
+def test_masked_pool() -> None:
+    inputs = torch.rand(3, 4, 5)
+    mask = cast(torch.BoolTensor, torch.ones(3, 4, 1).bool())
+    output = masked_pool(inputs, mask, method="max").numpy()
+    desired = torch.max(inputs, dim=1)[0].numpy()
+
+    numpy.testing.assert_equal(output, desired)  # type: ignore

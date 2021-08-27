@@ -7,6 +7,8 @@ from urllib.parse import urlparse
 import flatten_dict
 import mlflow
 import torch
+from allennlp.common.checks import ConfigurationError
+from allennlp.nn.util import masked_max, masked_mean, replace_masked_values
 
 REGEX_TIMEDELTA = re.compile(r"(?:(\d+) days?, )?(\d+):(\d+):(\d+)(?:\.(\d+))?")
 
@@ -72,3 +74,23 @@ def masked_fft(
         output[i, :l, :] = torch.fft.fft(x[:l, :], dim=0)
 
     return output
+
+
+def masked_pool(
+    inputs: torch.Tensor,
+    mask: Optional[torch.BoolTensor] = None,
+    method: str = "average",
+    dim: int = 1,
+    keepdim: bool = False,
+) -> torch.Tensor:
+    if mask is None:
+        mask = cast(torch.BoolTensor, inputs.new_ones(inputs.size()).bool())
+
+    if method == "average":
+        return masked_mean(inputs, mask, dim=dim, keepdim=keepdim)
+    if method == "max":
+        return masked_max(inputs, mask, dim=dim, keepdim=keepdim)
+    if method == "sum":
+        return replace_masked_values(inputs, mask, 0.0).sum(dim=dim, keepdim=keepdim)
+
+    raise ConfigurationError(f"Invalid pooling method: {method}")
