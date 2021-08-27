@@ -24,3 +24,11 @@ __pycache__
 .env
 .venv
 .vim
+
+
+# MLflow
+mlruns
+
+
+# allennlp-optuna
+allennlp_optuna.db

@@ -1,8 +1,11 @@
 import datetime
+import os
 import re
 from typing import Any, Dict, Optional, cast
+from urllib.parse import urlparse
 
 import flatten_dict
+import mlflow
 import torch
 
 REGEX_TIMEDELTA = re.compile(r"(?:(\d+) days?, )?(\d+):(\d+):(\d+)(?:\.(\d+))?")
@@ -26,6 +29,31 @@ def str_to_timedelta(delta_str: str) -> datetime.timedelta:
     seconds += 3600 * hours + 60 * minutes
 
     return datetime.timedelta(days=days, seconds=seconds, microseconds=micros)
+
+
+def get_serialization_dir(path: str = "outputs") -> str:
+    active_run = mlflow.active_run()
+    if active_run is not None:
+        run_info = active_run.info
+        artifact_uri = urlparse(run_info.artifact_uri)
+
+        if artifact_uri.scheme == "file":
+            return str(artifact_uri.path)
+
+        return str(
+            os.path.join(
+                path,
+                run_info.experiment_id,
+                run_info.run_id,
+            )
+        )
+
+    return str(
+        os.path.join(
+            path,
+            datetime.datetime.now().strftime("%Y-%m-%d/%H-%M-%S"),
+        )
+    )
 
 
 def masked_fft(

@@ -1,14 +1,11 @@
 import argparse
-import datetime
 import logging
-import os
-import uuid
-from urllib.parse import urlparse
 
 import mlflow
 from allennlp.commands.subcommand import Subcommand
 from allennlp.commands.train import train_model
 from allennlp.common import Params
+from xallennlp.utils import get_serialization_dir
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +85,7 @@ def train_model_from_args(args: argparse.Namespace) -> None:
     params = Params.from_file(args.param_path, args.overrides)
 
     with mlflow.start_run():
-        serialization_dir = get_serialization_dir(args)
+        serialization_dir = get_serialization_dir(args.serialization_dir)
         logging.info("serialization director: %s", serialization_dir)
 
         train_model(
@@ -101,31 +98,3 @@ def train_model_from_args(args: argparse.Namespace) -> None:
             include_package=args.include_package,
             dry_run=args.dry_run,
         )
-
-
-def get_serialization_dir(args: argparse.Namespace) -> str:
-    run_info = mlflow.active_run().info
-    artifact_uri = urlparse(run_info.artifact_uri)
-
-    if artifact_uri.scheme == "file":
-        return str(artifact_uri.path)
-
-    if args.serialization_dir:
-        serialization_dir = args.serialization_dir
-    else:
-        serialization_dir = generate_unique_serialization_dir()
-
-    return str(
-        os.path.join(
-            serialization_dir,
-            run_info.experiment_id,
-            run_info.run_id,
-        )
-    )
-
-
-def generate_unique_serialization_dir() -> str:
-    current_time = datetime.datetime.now()
-    timestamp = current_time.strftime("%Y%m%d_%H%M%S_%f")
-    dirid = uuid.uuid4().hex
-    return f"/tmp/xallennlp/output/{timestamp}_{dirid}"
