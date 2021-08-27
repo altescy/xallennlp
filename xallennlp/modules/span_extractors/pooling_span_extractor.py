@@ -9,7 +9,7 @@ from allennlp.nn.util import batched_span_select
 from xallennlp.utils import masked_pool
 
 
-@SpanExtractor.register("pooloing")
+@SpanExtractor.register("pooling")
 class PoolingSpanExtractor(SpanExtractorWithSpanWidthEmbedding):
     def __init__(
         self,
