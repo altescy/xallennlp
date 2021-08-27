@@ -9,7 +9,7 @@ xallennlp
 
 ## Features
 
-- Useful additional modules such as `HighwaySeq2SeqEncoder`, `PoolingSpanExtractor`, etc...
+- Useful additional modules such as `FastTextTokenIndexer`, `HighwaySeq2SeqEncoder`, `PoolingSpanExtractor`, etc...
 - [MLflow](https://mlflow.org/) integration makes managing experiments more easily
 - [Optuna](https://optuna.org/) integration enables you to find optimal hyper parameters with Optuna and MLflow (this feature is based on [allennlp-optuna](https://github.com/himkt/allennlp-optuna))
 
