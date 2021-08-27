@@ -654,6 +654,21 @@ pathlib2 = ">=2.3,<3.0"
 six = ">=1.12,<2.0"
 
 [[package]]
+name = "fugashi"
+version = "1.1.1"
+description = "A Cython MeCab wrapper for fast, pythonic Japanese tokenization."
+category = "main"
+optional = true
+python-versions = ">=3.5"
+
+[package.dependencies]
+unidic-lite = {version = "*", optional = true, markers = "extra == \"unidic-lite\""}
+
+[package.extras]
+unidic = ["unidic"]
+unidic-lite = ["unidic-lite"]
+
+[[package]]
 name = "future"
 version = "0.18.2"
 description = "Clean single-source support for Python 3 and 2"
@@ -834,7 +849,7 @@ numpy = [
 
 [[package]]
 name = "huggingface-hub"
-version = "0.0.15"
+version = "0.0.16"
 description = "Client library to download and publish models on the huggingface.co hub"
 category = "main"
 optional = false
@@ -1749,7 +1764,7 @@ murmurhash = ">=0.28.0,<1.1.0"
 
 [[package]]
 name = "prettytable"
-version = "2.1.0"
+version = "2.2.0"
 description = "A simple Python library for easily displaying tabular data in a visually appealing ASCII table format"
 category = "main"
 optional = false
@@ -2736,6 +2751,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "unidic-lite"
+version = "1.0.8"
+description = "A small version of UniDic packaged for Python"
+category = "main"
+optional = true
+python-versions = "*"
+
+[[package]]
 name = "unidiff"
 version = "0.7.0"
 description = "Unified diff parsing/metadata extraction library."
@@ -2883,10 +2906,14 @@ python-versions = ">=3.6"
 docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
 
+[extras]
+all = ["fugashi"]
+fugashi = ["fugashi"]
+
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "5a0df8e131dc3487d5652b84d086aee1d15ba1f46ba4fdafc4a129a741d601e7"
+content-hash = "c898674529647c8a5651b3a7e4e496c434feee511e7e5811793533155175a96e"
 
 [metadata.files]
 alembic = [
@@ -3239,6 +3266,24 @@ flatten-dict = [
     {file = "flatten-dict-0.3.0.tar.gz", hash = "sha256:0ccc43f15c7c84c5ef387ad19254f6769a32d170313a1bcbf4ce582089313d7e"},
     {file = "flatten_dict-0.3.0-py2.py3-none-any.whl", hash = "sha256:96038f9a0a09dca205112ae890e1f2159cfdf2af173397b2aa93d1bb9d055890"},
 ]
+fugashi = [
+    {file = "fugashi-1.1.1-cp35-cp35m-macosx_10_14_x86_64.whl", hash = "sha256:f4cb760951757ee8ceb144208eb35ca86181f4693fd03bd73ff34e5bf2df8698"},
+    {file = "fugashi-1.1.1-cp35-cp35m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:ab4b0496d0e856535296dcae36fe35c791b471c3da530e4dcbd7b5070c4fcd8a"},
+    {file = "fugashi-1.1.1-cp35-cp35m-win_amd64.whl", hash = "sha256:07a0185741a1558b9802801de2f9b34390c3f138074a6849aa601755f60d2604"},
+    {file = "fugashi-1.1.1-cp36-cp36m-macosx_10_14_x86_64.whl", hash = "sha256:9fb934f6c3f849b661f7b4b57903259017436bea9202be9d63198cbfe37df199"},
+    {file = "fugashi-1.1.1-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:9b1806a3cd344d260999954c45a1ddb5e84cef57ac49315fb861c254ed759ebc"},
+    {file = "fugashi-1.1.1-cp36-cp36m-win_amd64.whl", hash = "sha256:51920491fd89f30356d43093439e3cc6283f18f509e50014db5f0a71da8abbe3"},
+    {file = "fugashi-1.1.1-cp37-cp37m-macosx_10_14_x86_64.whl", hash = "sha256:f094b3655c374897717e3bc9a9a5f13d1f499e8bfde8d4460c4ae6b8810cb0c2"},
+    {file = "fugashi-1.1.1-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:6f6995b4897c8f8d6ea118732c3c62a8befeed20181a8d7b1a96ee2b65c7a434"},
+    {file = "fugashi-1.1.1-cp37-cp37m-win_amd64.whl", hash = "sha256:53280ea0f65e7c9f8f91844eeaaf5202858997bc44cd55903a8089eeca15ae63"},
+    {file = "fugashi-1.1.1-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:99f384ec47e8c7d9d1499f5dc6bc0bc52d7281fcc2345f3a4c62937c1bcb5ba5"},
+    {file = "fugashi-1.1.1-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:98ff499188e398f149c449800ec7038ef4cf93cb4ae8cdf3f52356b8c7607864"},
+    {file = "fugashi-1.1.1-cp38-cp38-win_amd64.whl", hash = "sha256:cf7a28f311f963eb666824764388f4bc434e1ac230a55d2cd4f998ec0712f3f8"},
+    {file = "fugashi-1.1.1-cp39-cp39-macosx_10_14_x86_64.whl", hash = "sha256:de07719e0841036c64abdd7bd942736918666e67f254de66f958e3457756e23a"},
+    {file = "fugashi-1.1.1-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:e1314520a1f92b79d0616c64a86839ba594fcd489b1fc9c7cc456acb508ae1fc"},
+    {file = "fugashi-1.1.1-cp39-cp39-win_amd64.whl", hash = "sha256:f462d39f937993d6964d8cd0979ac96a79cae621d53cd65f4e2b31b73392b704"},
+    {file = "fugashi-1.1.1.tar.gz", hash = "sha256:c57125af6f93bffc5c25803bbc476cb41527bfe8841a2a15019e7f12cc181d30"},
+]
 future = [
     {file = "future-0.18.2.tar.gz", hash = "sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d"},
 ]
@@ -3374,8 +3419,8 @@ h5py = [
     {file = "h5py-3.4.0.tar.gz", hash = "sha256:ee1c683d91ab010d5e85cb61e8f9e7ee0d8eab545bf3dd50a9618f1d0e8f615e"},
 ]
 huggingface-hub = [
-    {file = "huggingface_hub-0.0.15-py3-none-any.whl", hash = "sha256:c6afe573b43edc91856538bbfdb8003096302bdb0944553b664941c4f5305c74"},
-    {file = "huggingface_hub-0.0.15.tar.gz", hash = "sha256:b2be42a78f12bf1f9b7cc85a0a219ba067ac092311d5a9abee850b7b62bfc8ab"},
+    {file = "huggingface_hub-0.0.16-py3-none-any.whl", hash = "sha256:c8170998f1ac43ec9253f5fd321213aeee54a9b938c9ce5e696a06274710b67c"},
+    {file = "huggingface_hub-0.0.16.tar.gz", hash = "sha256:6742126aef62244db6dc4cd0d4d9f13eef6a9b125c972f92111fb285c1100ae6"},
 ]
 idna = [
     {file = "idna-3.2-py3-none-any.whl", hash = "sha256:14475042e284991034cb48e06f6851428fb14c4dc953acd9be9a5e95c7b6dd7a"},
@@ -3842,8 +3887,8 @@ preshed = [
     {file = "preshed-3.0.5.tar.gz", hash = "sha256:c6d3dba39ed5059aaf99767017b9568c75b2d0780c3481e204b1daecde00360e"},
 ]
 prettytable = [
-    {file = "prettytable-2.1.0-py3-none-any.whl", hash = "sha256:bb5abc72bdfae6f3cdadb04fb7726f6915af0ddb7c897a41d4ad7736d9bfd8fd"},
-    {file = "prettytable-2.1.0.tar.gz", hash = "sha256:5882ed9092b391bb8f6e91f59bcdbd748924ff556bb7c634089d5519be87baa0"},
+    {file = "prettytable-2.2.0-py3-none-any.whl", hash = "sha256:b186f1db9c9377cb552cfa95a3b7a0feab6ec55d7cad7e0763bdcbea1e8f4687"},
+    {file = "prettytable-2.2.0.tar.gz", hash = "sha256:bd81678c108e6c73d4f1e47cd4283de301faaa6ff6220bcd1d4022038c56b416"},
 ]
 prometheus-client = [
     {file = "prometheus_client-0.11.0-py2.py3-none-any.whl", hash = "sha256:b014bc76815eb1399da8ce5fc84b7717a3e63652b0c0f8804092c9363acab1b2"},
@@ -4636,6 +4681,9 @@ typing-extensions = [
     {file = "typing_extensions-3.10.0.0-py2-none-any.whl", hash = "sha256:0ac0f89795dd19de6b97debb0c6af1c70987fd80a2d62d1958f7e56fcc31b497"},
     {file = "typing_extensions-3.10.0.0-py3-none-any.whl", hash = "sha256:779383f6086d90c99ae41cf0ff39aac8a7937a9283ce0a414e5dd782f4c94a84"},
     {file = "typing_extensions-3.10.0.0.tar.gz", hash = "sha256:50b6f157849174217d0656f99dc82fe932884fb250826c18350e159ec6cdf342"},
+]
+unidic-lite = [
+    {file = "unidic-lite-1.0.8.tar.gz", hash = "sha256:db9d4572d9fdd4d00a97949d4b0741ec480ee05a7e7e2e32f547500dae27b245"},
 ]
 unidiff = [
     {file = "unidiff-0.7.0-py2.py3-none-any.whl", hash = "sha256:ae4a9dacb2fba7297dbd85c4d629728ca4b3a6c2606a53a419b53b0388857c89"},
