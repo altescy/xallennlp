@@ -5,7 +5,7 @@ xallennlp
 [![License](https://img.shields.io/github/license/altescy/xallennlp)](https://github.com/altescy/xallennlp/blob/master/LICENSE)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/altescy/xallennlp)](https://github.com/altescy/xallennlp/)
 
-`xallennlp` provides additional modules and commands for AllenNLP.
+`xallennlp` provides additional modules and commands for [AllenNLP](https://allennlp.org/).
 
 ## Features
 
