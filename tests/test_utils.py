@@ -3,14 +3,7 @@ from typing import cast
 
 import numpy.testing
 import torch
-
-from xallennlp.utils import (
-    flatten_dict_for_mlflow_log,
-    masked_fft,
-    masked_fourier_transform,
-    masked_pool,
-    str_to_timedelta,
-)
+from xallennlp.utils import flatten_dict_for_mlflow_log, masked_fft, masked_pool, str_to_timedelta
 
 
 def test_flatten_dict_for_mlflow_log() -> None:
