@@ -28,6 +28,8 @@ class PoolingSpanExtractor(SpanExtractorWithSpanWidthEmbedding):
         self._method = method
 
     def get_output_dim(self) -> int:
+        if self._span_width_embedding is not None:
+            return self._input_dim + int(self._span_width_embedding.get_output_dim())
         return self._input_dim
 
     def _embed_spans(
