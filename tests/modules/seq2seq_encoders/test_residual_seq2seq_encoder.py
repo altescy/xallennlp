@@ -12,6 +12,8 @@ def test_residual_seq2seq_encoder() -> None:
         projection=False,
     )
 
+    assert not encoder.is_bidirectional()
+
     inputs = torch.randn((16, 4, 8))
     output = encoder(inputs)
 
@@ -26,6 +28,8 @@ def test_residual_seq2seq_encoder_with_projection() -> None:
         ),
         projection=True,
     )
+
+    assert not encoder.is_bidirectional()
 
     inputs = torch.randn((16, 4, 8))
     output = encoder(inputs)
