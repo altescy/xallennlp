@@ -66,6 +66,14 @@ class HighwaySeq2SeqEncoder(Seq2SeqEncoder):
             if carry_gate_encoder is not None:
                 assert carry_gate_encoder.get_output_dim() in (self._input_dim, 1)
 
+        self._bidirectional = any(
+            [
+                self._highway_encoder.is_bidirectional(),
+                self._transform_gate_encoder.is_bidirectional(),
+                self._carry_gate_encoder.is_bidirectional() if self._carry_gate_encoder else False,
+            ]
+        )
+
     def forward(
         self,
         inputs: torch.Tensor,
@@ -100,3 +108,6 @@ class HighwaySeq2SeqEncoder(Seq2SeqEncoder):
 
     def get_output_dim(self) -> int:
         return self.get_input_dim()
+
+    def is_bidirectional(self) -> bool:
+        return self._bidirectional

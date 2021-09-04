@@ -52,3 +52,6 @@ class ResidualSeq2SeqEncoder(Seq2SeqEncoder):
 
     def get_output_dim(self) -> int:
         return self.get_input_dim()
+
+    def is_bidirectional(self) -> bool:
+        return self._encoder.is_bidirectional()

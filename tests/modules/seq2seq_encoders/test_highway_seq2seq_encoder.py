@@ -15,10 +15,13 @@ def test_highway_seq2seq_encoder() -> None:
         ),
         LstmSeq2SeqEncoder(
             input_size=8,
-            hidden_size=8,
+            hidden_size=4,
+            bidirectional=True,
         ),
         projection=False,
     )
+
+    assert encoder.is_bidirectional()
 
     inputs = torch.randn((16, 4, 8))
     output = encoder(inputs)

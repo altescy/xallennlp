@@ -103,7 +103,7 @@ class FNetEncoder(Seq2SeqEncoder):
         return self._input_dim
 
     def is_bidirectional(self) -> bool:
-        return False
+        return True
 
     def forward(
         self,
