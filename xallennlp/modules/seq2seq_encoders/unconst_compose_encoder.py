@@ -10,16 +10,13 @@ class UnconstComposeEncoder(Seq2SeqEncoder):
         if not encoders:
             raise ValueError("Need at least one encoder.")
 
-        if len(set(encoder.get_input_dim() for encoder in encoders)) > 1:
-            raise ValueError("All encoders' input dim must be the same.")
-
         stateful = any(encoder.stateful for encoder in encoders)
 
         super().__init__(stateful=stateful)
 
         self._encoders = torch.nn.ModuleList(encoders)
         self._input_dim = int(self._encoders[0].get_input_dim())
-        self._output_dim = sum(encoder.get_output_dim() for encoder in encoders)
+        self._output_dim = int(self._encoders[-1].get_output_dim())
         self._bidirectional = any(encoder.is_bidirectional() for encoder in encoders)
 
     def get_input_dim(self) -> int:
@@ -36,8 +33,9 @@ class UnconstComposeEncoder(Seq2SeqEncoder):
         inputs: torch.Tensor,
         mask: Optional[torch.BoolTensor] = None,
     ) -> torch.Tensor:
-        output = torch.cat(
-            [encoder(inputs, mask) for encoder in self._encoders],
-            dim=-1,
-        )
+        output = inputs
+
+        for encoder in self._encoders:
+            output = encoder(output, mask)
+
         return output
