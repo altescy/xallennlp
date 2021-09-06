@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, cast
 
 import torch
 from allennlp.modules.seq2vec_encoders import Seq2VecEncoder
@@ -27,4 +27,6 @@ class PoolingSeq2VecEncoder(Seq2VecEncoder):
         inputs: torch.Tensor,
         mask: Optional[torch.BoolTensor] = None,
     ) -> torch.Tensor:
+        if mask is not None:
+            mask = cast(torch.BoolTensor, mask.unsqueeze(-1))
         return masked_pool(inputs, mask, self._method)
