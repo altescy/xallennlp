@@ -17,7 +17,7 @@ def test_unconst_compose_encoder() -> None:
             ),
             FeedForwardEncoder(
                 FeedForward(
-                    input_dim=4,
+                    input_dim=6,
                     hidden_dims=3,
                     num_layers=2,
                     activations=SwishActivation(),  # type: ignore
@@ -28,7 +28,7 @@ def test_unconst_compose_encoder() -> None:
 
     assert encoder.is_bidirectional()
     assert encoder.get_input_dim() == 4
-    assert encoder.get_output_dim() == 9
+    assert encoder.get_output_dim() == 3
 
     output = encoder(inputs)
-    assert output.size() == (2, 3, 9)
+    assert output.size() == (2, 3, 3)
