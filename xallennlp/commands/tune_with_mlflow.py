@@ -53,11 +53,11 @@ class TuneWithMlflow(Subcommand):
         # ---- Optuna -----
 
         subparser.add_argument(
-            "--skip-if-exists",
+            "--load-if-exists",
             default=False,
             action="store_true",
             help="If specified, the creation of the study is skipped "
-            "without any error when the study name is duplicated.",
+            "and load existing one when the study name is duplicated.",
         )
 
         subparser.add_argument(
@@ -114,7 +114,7 @@ def tune_from_args(args: argparse.Namespace) -> None:
     serialization_dir = args.serialization_dir
     include_package = args.include_package
 
-    load_if_exists = args.skip_if_exists
+    load_if_exists = args.load_if_exists
     direction = args.direction
     n_trials = args.n_trials
     timeout = args.timeout
