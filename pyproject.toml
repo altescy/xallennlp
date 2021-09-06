@@ -3,7 +3,9 @@ name = "xallennlp"
 version = "0.4.0"
 description = "Expanded AllenNLP"
 authors = ["altescy <altescy@fastmail.com>"]
-license = "MIT"
+license = "MIT License"
+readme = "README.md"
+keywords = ["nlp", "pytorch", "allennlp", "mlflow", "optuna", "fasttext"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
