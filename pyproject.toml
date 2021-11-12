@@ -16,6 +16,7 @@ spacy = "^3.0.6"
 fasttext = "^0.9.2"
 allennlp-optuna = "^0.1.6"
 fugashi = {version = "^1.1.1", optional = true, extras = ["unidic-lite"]}
+wandb = "^0.12.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.3"
