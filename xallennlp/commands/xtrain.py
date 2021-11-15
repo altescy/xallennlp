@@ -10,8 +10,8 @@ from xallennlp.utils import get_serialization_dir
 logger = getLogger(__name__)
 
 
-@Subcommand.register("xtrain")
-class XTrain(Subcommand):
+@Subcommand.register("train", exist_ok=True)
+class Train(Subcommand):
     def add_subparser(
         self,
         parser: argparse._SubParsersAction,
