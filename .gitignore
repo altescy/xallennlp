@@ -27,8 +27,20 @@ __pycache__
 
 
 # MLflow
-mlruns
+mlruns/
 
 
 # allennlp-optuna
 allennlp_optuna.db
+
+
+# wandb
+/wandb/
+
+
+# training artifacts
+/outputs/
+
+
+# direnv
+.envrc
