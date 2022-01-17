@@ -20,3 +20,23 @@ def test_concat_span_extractor() -> None:
 
     output = extractor(inputs, spans)
     assert output.size() == (2, 2, 18)
+
+
+def test_concat_span_extractor_with_combination() -> None:
+    inputs = torch.rand((2, 4, 5))
+    spans = torch.LongTensor([[[0, 2], [1, 1]], [[1, 2], [2, 3]]])
+
+    extractor = ConcatSpanExtractor(
+        span_extractors=[
+            SelfAttentiveSpanExtractor(input_dim=5),
+            SelfAttentiveSpanExtractor(input_dim=5),
+        ],
+        combination="1,2,1*2",
+        num_width_embeddings=4,
+        span_width_embedding_dim=3,
+    )
+    assert extractor.get_input_dim() == 5
+    assert extractor.get_output_dim() == 18
+
+    output = extractor(inputs, spans)
+    assert output.size() == (2, 2, 18)
