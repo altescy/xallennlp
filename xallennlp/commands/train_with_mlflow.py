@@ -1,7 +1,6 @@
 import argparse
 import logging
 
-import mlflow
 from allennlp.commands.subcommand import Subcommand
 from allennlp.commands.train import train_model
 from allennlp.common import Params
@@ -82,6 +81,8 @@ class TrainWithMLflow(Subcommand):
 
 
 def train_model_from_args(args: argparse.Namespace) -> None:
+    import mlflow
+
     params = Params.from_file(args.param_path, args.overrides)
 
     with mlflow.start_run():
