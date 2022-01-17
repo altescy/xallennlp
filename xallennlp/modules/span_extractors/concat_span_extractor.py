@@ -5,6 +5,7 @@ from allennlp.modules.span_extractors import SpanExtractor
 from allennlp.modules.span_extractors.span_extractor_with_span_width_embedding import (
     SpanExtractorWithSpanWidthEmbedding,
 )
+from allennlp.nn.util import combine_tensors, get_combined_dim
 
 
 @SpanExtractor.register("concat")
@@ -12,6 +13,7 @@ class ConcatSpanExtractor(SpanExtractorWithSpanWidthEmbedding):
     def __init__(
         self,
         span_extractors: List[SpanExtractor],
+        combination: Optional[str] = None,
         num_width_embeddings: Optional[int] = None,
         span_width_embedding_dim: Optional[int] = None,
         bucket_widths: bool = False,
@@ -30,7 +32,12 @@ class ConcatSpanExtractor(SpanExtractorWithSpanWidthEmbedding):
             bucket_widths=bucket_widths,
         )
         self._span_extractors = torch.nn.ModuleList(span_extractors)
-        self._combined_dim = sum(extractor.get_output_dim() for extractor in span_extractors)
+        self._combination = combination
+
+        extractor_output_dims = [extractor.get_output_dim() for extractor in span_extractors]
+        self._combined_dim = (
+            get_combined_dim(combination, extractor_output_dims) if combination else sum(extractor_output_dims)
+        )
 
     def get_output_dim(self) -> int:
         if self._span_width_embedding is not None:
@@ -44,16 +51,16 @@ class ConcatSpanExtractor(SpanExtractorWithSpanWidthEmbedding):
         sequence_mask: Optional[torch.BoolTensor] = None,
         span_indices_mask: Optional[torch.BoolTensor] = None,
     ) -> torch.Tensor:
-        output = torch.cat(
-            [
-                extractor(
-                    sequence_tensor,
-                    span_indices,
-                    sequence_mask,
-                    span_indices_mask,
-                )
-                for extractor in self._span_extractors
-            ],
-            dim=-1,
-        )
-        return output
+        tensors = [
+            extractor(
+                sequence_tensor,
+                span_indices,
+                sequence_mask,
+                span_indices_mask,
+            )
+            for extractor in self._span_extractors
+        ]
+        if self._combination:
+            return combine_tensors(self._combination, tensors)
+        else:
+            return torch.cat(tensors, dim=-1)
