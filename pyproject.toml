@@ -29,7 +29,7 @@ types-PyYAML = "^6.0.3"
 
 [tool.poetry.extras]
 mlflow = ["mlflow"]
-optuna = ["optuna"]
+optuna = ["allennlp-optuna"]
 fugashi = ["fugashi"]
 all = ["mlflow", "optuna", "fugashi"]
 

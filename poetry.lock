@@ -3232,12 +3232,12 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 all = ["mlflow", "fugashi"]
 fugashi = ["fugashi"]
 mlflow = ["mlflow"]
-optuna = []
+optuna = ["allennlp-optuna"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "94ffe3737b97de06b398b892c354224fb45ced42c848787d14938fc73a671ea0"
+content-hash = "2f1332aae4a01611c8c30bada7f7c792444a4d0e03f26694d7b046080474dcc7"
 
 [metadata.files]
 aiohttp = [
