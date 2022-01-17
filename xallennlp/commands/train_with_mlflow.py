@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class TrainWithMLflow(Subcommand):
     def add_subparser(
         self,
-        parser: argparse._SubParsersAction,  # pylint: disable=protected-access
+        parser: argparse._SubParsersAction,
     ) -> argparse.ArgumentParser:
         description = """Train the model with MLflow Tracking."""
         subparser = parser.add_parser(
@@ -78,7 +78,7 @@ class TrainWithMLflow(Subcommand):
 
         subparser.set_defaults(func=train_model_from_args)
 
-        return subparser
+        return subparser  # type: ignore[no-any-return]
 
 
 def train_model_from_args(args: argparse.Namespace) -> None:
