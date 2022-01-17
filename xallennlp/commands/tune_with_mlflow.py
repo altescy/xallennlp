@@ -154,7 +154,7 @@ def tune_from_args(args: argparse.Namespace) -> None:
             )
             score = executor.run()
 
-        return score
+        return float(score)
 
     if optuna_param_path is not None and os.path.isfile(optuna_param_path):
         optuna_config = json.load(open(optuna_param_path))
