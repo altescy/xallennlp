@@ -8,7 +8,7 @@ MODULE=xallennlp
 all: format lint test
 
 install:
-	poetry install
+	poetry install --extras all
 	$(PYTHON) -c 'import nltk; [nltk.download(p) for p in ("wordnet", "wordnet_ic", "sentiwordnet", "omw")]'
 
 .PHONY: format
