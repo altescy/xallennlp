@@ -4,7 +4,6 @@ import os
 import tempfile
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
-import mlflow
 from allennlp.training.callbacks import TrainerCallback
 
 if TYPE_CHECKING:
@@ -23,6 +22,10 @@ class MLflowMetrics(TrainerCallback):
     ) -> None:
         super().__init__(serialization_dir=serialization_dir)
 
+        import mlflow
+
+        self.mlflow = mlflow
+
     def on_start(
         self,
         trainer: "GradientDescentTrainer",
@@ -32,7 +35,7 @@ class MLflowMetrics(TrainerCallback):
         with open(os.path.join(self.serialization_dir, "config.json")) as json_file:
             config = flatten_dict_for_mlflow_log(json.load(json_file))
 
-        mlflow.log_params(config)
+        self.mlflow.log_params(config)
 
     def on_epoch(
         self,
@@ -52,9 +55,9 @@ class MLflowMetrics(TrainerCallback):
 
         for key, value in flattened_metrics.items():
             if isinstance(value, (int, float)):
-                mlflow.log_metric(key, float(value), step=step)
+                self.mlflow.log_metric(key, float(value), step=step)
             else:
-                log_nonnumerical_metric(key, value, step)
+                self._log_nonnumerical_metric(key, value, step)
 
     def on_end(
         self,
@@ -64,14 +67,13 @@ class MLflowMetrics(TrainerCallback):
         is_primary: bool = True,
         **kwargs: Any,
     ) -> None:
-        mlflow.log_artifacts(self.serialization_dir)
+        self.mlflow.log_artifacts(self.serialization_dir)
 
+    def _log_nonnumerical_metric(self, key: str, value: Any, step: int) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            temppath = os.path.join(tempdir, key)
 
-def log_nonnumerical_metric(key: str, value: Any, step: int) -> None:
-    with tempfile.TemporaryDirectory() as tempdir:
-        temppath = os.path.join(tempdir, key)
+            with open(temppath, "w") as f:
+                f.write(repr(value))
 
-        with open(temppath, "w") as f:
-            f.write(repr(value))
-
-        mlflow.log_artifact(temppath, f"metrics/step_{step}")
+            self.mlflow.log_artifact(temppath, f"metrics/step_{step}")
