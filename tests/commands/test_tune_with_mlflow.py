@@ -1,5 +1,4 @@
 import argparse
-import tempfile
 from pathlib import Path
 
 import mlflow
@@ -16,26 +15,23 @@ class TestTuneWithMlflow:
         subparsers = self.parser.add_subparsers(title="Commands", metavar="")
         TuneWithMlflow().add_subparser(subparsers)
 
-    def test_train_with_mlflow_from_args(self) -> None:
-        with tempfile.TemporaryDirectory() as tempdir:
-            tempdir = Path(tempdir)
+    def test_train_with_mlflow_from_args(self, tmp_path: Path) -> None:
+        mlflow.set_tracking_uri(f"file://{tmp_path}")
+        mlflow.set_experiment("test")
 
-            mlflow.set_tracking_uri(f"file://{tempdir}")
-            mlflow.set_experiment("test")
+        args = self.parser.parse_args(
+            [
+                "tune-with-mlflow",
+                "tests/fixtures/configs/basic_classifier_experiment.jsonnet",
+                "tests/fixtures/configs/basic_classifier_hparams.json",
+                "--n-trials",
+                "5",
+            ]
+        )
+        args.include_package = []
+        tune_from_args(args)
 
-            args = self.parser.parse_args(
-                [
-                    "tune-with-mlflow",
-                    "tests/fixtures/configs/basic_classifier_experiment.jsonnet",
-                    "tests/fixtures/configs/basic_classifier_hparams.json",
-                    "--n-trials",
-                    "5",
-                ]
-            )
-            args.include_package = []
-            tune_from_args(args)
+        with open(tmp_path / "0" / "meta.yaml") as f:
+            meta = yaml.safe_load(f)
 
-            with open(tempdir / "0" / "meta.yaml") as f:
-                meta = yaml.safe_load(f)
-
-            assert meta["name"] == "test"
+        assert meta["name"] == "test"

@@ -4,6 +4,12 @@ PYTEST=poetry run pytest
 PYSEN=poetry run pysen
 MODULE=xallennlp
 
+.PHONY: all
+all: format lint test
+
+install:
+	poetry install --extras all
+	$(PYTHON) -c 'import nltk; [nltk.download(p) for p in ("wordnet", "wordnet_ic", "sentiwordnet", "omw", "omw-1.4")]'
 
 .PHONY: format
 format:

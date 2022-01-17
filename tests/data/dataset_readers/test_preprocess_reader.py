@@ -10,6 +10,8 @@ def test_preprocess_reader_text_to_instance() -> None:
         {"text": Lowercase()},
     )
     instance = reader.text_to_instance(text="THIS IS A TEST SENTENCE")
-    text_field: TextField = instance["tokens"]
+    text_field = instance["tokens"]
+    assert isinstance(text_field, TextField)
+
     desired_output = ["this", "is", "a", "test", "sentence"]
     assert [token.text for token in text_field.tokens] == desired_output

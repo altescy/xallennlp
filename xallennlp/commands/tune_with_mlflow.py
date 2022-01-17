@@ -21,7 +21,10 @@ class TuneWithMlflow(Subcommand):
     This command is based on allennlp-optuna.
     """
 
-    def add_subparser(self, parser: argparse._SubParsersAction) -> argparse.ArgumentParser:
+    def add_subparser(
+        self,
+        parser: argparse._SubParsersAction,
+    ) -> argparse.ArgumentParser:
         description = """Train the specified model on the specified dataset."""
         subparser = parser.add_parser(self.name, description=description, help="Optimize hyperparameter of a model.")
 
@@ -104,7 +107,7 @@ class TuneWithMlflow(Subcommand):
         )
 
         subparser.set_defaults(func=tune_from_args)
-        return subparser
+        return subparser  # type: ignore[no-any-return]
 
 
 def tune_from_args(args: argparse.Namespace) -> None:

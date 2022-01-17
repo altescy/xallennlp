@@ -34,13 +34,13 @@ class MLflowMetrics(TrainerCallback):
 
         mlflow.log_params(config)
 
-    def on_epoch(  # type: ignore
+    def on_epoch(
         self,
         trainer: "GradientDescentTrainer",
         metrics: Dict[str, Any],
         epoch: int,
         is_primary: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         if "training_duration" in metrics:
             trainig_duration = str_to_timedelta(metrics["training_duration"])
