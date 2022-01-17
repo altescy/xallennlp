@@ -10,7 +10,7 @@ keywords = ["nlp", "pytorch", "allennlp", "mlflow", "optuna", "fasttext"]
 [tool.poetry.dependencies]
 python = "^3.8"
 allennlp = ">=2.0.0,<3.0.0"
-mlflow = "^1.9.0"
+mlflow = {version = "^1.9.0", optional = true}
 flatten_dict = "^0.4.0"
 spacy = "^3.1.2"
 fasttext = "^0.9.2"
@@ -28,8 +28,9 @@ mypy = "^0.931"
 types-PyYAML = "^6.0.3"
 
 [tool.poetry.extras]
+mlflow = ["mlflow"]
 fugashi = ["fugashi"]
-all = ["fugashi"]
+all = ["mlflow", "fugashi"]
 
 [tool.poetry.scripts]
 xallennlp = "xallennlp.__main__:run"
