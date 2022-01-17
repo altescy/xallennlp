@@ -4,6 +4,8 @@ PYTEST=poetry run pytest
 PYSEN=poetry run pysen
 MODULE=xallennlp
 
+.PHONY: all
+all: format lint test
 
 .PHONY: format
 format:
