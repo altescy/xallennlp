@@ -9,7 +9,7 @@ all: format lint test
 
 install:
 	poetry install --extras all
-	$(PYTHON) -c 'import nltk; [nltk.download(p) for p in ("wordnet", "wordnet_ic", "sentiwordnet", "omw")]'
+	$(PYTHON) -c 'import nltk; [nltk.download(p) for p in ("wordnet", "wordnet_ic", "sentiwordnet", "omw", "omw-1.4")]'
 
 .PHONY: format
 format:
