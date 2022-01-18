@@ -1,6 +1,5 @@
 import logging
 
-import mlflow
 from allennlp.training import Checkpointer, Trainer
 
 logger = logging.getLogger(__name__)
@@ -13,6 +12,8 @@ class MLflowCheckpointer(Checkpointer):
         trainer: Trainer,
     ) -> None:
         super().save_checkpoint(trainer)
+
+        import mlflow
 
         if mlflow.active_run() is None:
             logger.warning("MLflow active run not found." " Recommend to use 'train-with-mlflow' command.")
