@@ -5,7 +5,6 @@ from typing import Any, Dict, Optional, cast
 from urllib.parse import urlparse
 
 import flatten_dict
-import mlflow
 import torch
 from allennlp.common.checks import ConfigurationError
 from allennlp.nn.util import masked_max, masked_mean, replace_masked_values
@@ -34,7 +33,13 @@ def str_to_timedelta(delta_str: str) -> datetime.timedelta:
 
 
 def get_serialization_dir(path: str = "outputs") -> str:
-    active_run = mlflow.active_run()
+    try:
+        import mlflow
+
+        active_run = mlflow.active_run()
+    except ModuleNotFoundError:
+        active_run = None
+
     if active_run is not None:
         run_info = active_run.info
         artifact_uri = urlparse(run_info.artifact_uri)
