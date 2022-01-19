@@ -5,7 +5,6 @@ import os
 import tempfile
 from functools import partial
 
-import mlflow
 from allennlp.commands.subcommand import Subcommand
 from xallennlp.utils import flatten_dict_for_mlflow_log, get_serialization_dir
 
@@ -108,6 +107,7 @@ class TuneWithMlflow(Subcommand):
 
 
 def tune_from_args(args: argparse.Namespace) -> None:
+    import mlflow
     import optuna
     from optuna import Trial
     from optuna.integration import AllenNLPExecutor
