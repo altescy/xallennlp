@@ -48,9 +48,9 @@ class PretrainedTransformerMinhashIndexer(TokenIndexer):
     def tokens_to_indices(self, tokens: List[Token], vocabulary: Vocabulary) -> Dict[str, List[numpy.ndarray]]:
         wordpieces, offsets = self._tokenizer.intra_word_tokenize([self._get_feature_value(token) for token in tokens])
         vectors: List[numpy.ndarray] = []
-        for offset in offsets:
+        for token, offset in zip(tokens, offsets):
             if offset is None:
-                token_wordpieces = [Token("<unk>")]
+                token_wordpieces = [token]
             else:
                 token_wordpieces = wordpieces[offset[0] : offset[1] + 1]
             vector = self._get_token_embedding(token_wordpieces)
