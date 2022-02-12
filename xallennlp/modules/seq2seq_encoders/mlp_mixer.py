@@ -116,6 +116,7 @@ class MLPMixer(Seq2SeqEncoder):
         mask: Optional[torch.BoolTensor] = None,
     ) -> torch.Tensor:
         h = inputs
+        m = mask.float() if mask is not None else None
         for layer, dropout in zip(self._layers, self._dropouts):
-            h = dropout(layer(h, mask))
+            h = dropout(layer(h, m))
         return h
