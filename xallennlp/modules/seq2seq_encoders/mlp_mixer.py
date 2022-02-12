@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import Optional, Tuple, cast
 
 import torch
 import torch.nn.functional as F
@@ -15,11 +15,23 @@ class SpatialLinear(torch.nn.Module):
         super().__init__()
         self._toeplitz = toeplitz
         if self._toeplitz:
-            weights = convert_to_toeplitz(torch.randn(2 * spatial_dim - 1))
+            weights = torch.randn(2 * spatial_dim - 1)
         else:
             weights = torch.randn(spatial_dim, spatial_dim)
         self._weights = torch.nn.Parameter(weights)
         self._biases = torch.nn.Parameter(torch.randn(spatial_dim))
+
+    def _get_weights_and_biases(
+        self,
+        max_length: int,
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        if self._toeplitz:
+            weights = convert_to_toeplitz(self._weights)
+        else:
+            weights = self._weights
+        weights = weights[:max_length, :max_length]
+        biases = self._biases[:max_length]
+        return weights, biases
 
     def forward(
         self,
@@ -36,9 +48,8 @@ class SpatialLinear(torch.nn.Module):
             inputs *= mask
 
         # Shape: (max_length, max_length)
-        weights = self._weights[:max_length, :max_length]
         # Shape: (max_length)
-        biases = self._biases[:max_length]
+        weights, biases = self._get_weights_and_biases(max_length)
 
         # Shape: (batch_size * embedding_dim, max_length)
         output = inputs @ weights + biases
