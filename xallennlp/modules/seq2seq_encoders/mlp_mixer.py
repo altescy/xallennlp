@@ -3,12 +3,22 @@ from typing import Optional, cast
 import torch
 import torch.nn.functional as F
 from allennlp.modules.seq2seq_encoders.seq2seq_encoder import Seq2SeqEncoder
+from xallennlp.utils import convert_to_toeplitz
 
 
 class SpatialLinear(torch.nn.Module):
-    def __init__(self, spatial_dim: int) -> None:
+    def __init__(
+        self,
+        spatial_dim: int,
+        toeplitz: bool = False,
+    ) -> None:
         super().__init__()
-        self._weights = torch.nn.Parameter(torch.randn(spatial_dim, spatial_dim))
+        self._toeplitz = toeplitz
+        if self._toeplitz:
+            weights = convert_to_toeplitz(torch.randn(2 * spatial_dim - 1))
+        else:
+            weights = torch.randn(spatial_dim, spatial_dim)
+        self._weights = torch.nn.Parameter(weights)
         self._biases = torch.nn.Parameter(torch.randn(spatial_dim))
 
     def forward(
@@ -43,12 +53,13 @@ class MixerLayer(torch.nn.Module):
         self,
         channel_dim: int,
         spatial_dim: int,
+        toeplitz: bool = False,
     ) -> None:
         super().__init__()
         self._layer_norm_1 = torch.nn.LayerNorm(channel_dim)
         self._layer_norm_2 = torch.nn.LayerNorm(channel_dim)
-        self._spatial_linear_1 = SpatialLinear(spatial_dim)
-        self._spatial_linear_2 = SpatialLinear(spatial_dim)
+        self._spatial_linear_1 = SpatialLinear(spatial_dim, toeplitz)
+        self._spatial_linear_2 = SpatialLinear(spatial_dim, toeplitz)
         self._channel_linear_1 = torch.nn.Linear(channel_dim, channel_dim)
         self._channel_linear_2 = torch.nn.Linear(channel_dim, channel_dim)
 
@@ -83,13 +94,14 @@ class MLPMixer(Seq2SeqEncoder):
         self,
         input_dim: int,
         num_layers: int,
+        toeplitz: bool = False,
         max_length: int = 512,
         dropout: float = 0.0,
     ) -> None:
         super().__init__()
         self._input_dim = input_dim
 
-        self._layers = torch.nn.ModuleList([MixerLayer(input_dim, max_length) for _ in range(num_layers)])
+        self._layers = torch.nn.ModuleList([MixerLayer(input_dim, max_length, toeplitz) for _ in range(num_layers)])
         self._dropouts = torch.nn.ModuleList([torch.nn.Dropout(p=dropout) for _ in range(num_layers)])
 
     def get_input_dim(self) -> int:
