@@ -68,7 +68,7 @@ class MinHashTokenIndexer(TokenIndexer):
         text = self._get_feature_value(token)
         text = f"<{text}>"
         ngrams = set(ngram for n in range(self._n_grams) for ngram in self._get_ngrams(text, n + 1))
-        fingerprint = [min(hash(f"{ngram}:{salt}") for ngram in ngrams for salt in self._salts)]
+        fingerprint = [min(hash(f"{ngram}:{salt}") for ngram in ngrams) for salt in self._salts]
         return fingerprint
 
     def _get_feature_value(self, token: Token) -> str:

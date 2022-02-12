@@ -6,7 +6,7 @@ from xallennlp.data.token_indexers.minhash_token_indexer import MinHashTokenInde
 
 
 def test_minhash_token_indexers() -> None:
-    indexer = MinHashTokenIndexer(num_features=16)
+    indexer = MinHashTokenIndexer(num_features=16, num_hashes=64)
     tokens = [Token(word) for word in "this is a test sentence".split()]
     field = TextField(tokens, token_indexers={"tokens": indexer})
 
@@ -23,3 +23,4 @@ def test_minhash_token_indexers() -> None:
     vector = vectors[0]
     assert isinstance(vector, numpy.ndarray)
     assert vector.shape == (16,)
+    assert vector.sum() == 64
