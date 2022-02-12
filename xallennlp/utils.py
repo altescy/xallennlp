@@ -99,3 +99,23 @@ def masked_pool(
         return replace_masked_values(inputs, mask, 0.0).sum(dim=dim, keepdim=keepdim)
 
     raise ConfigurationError(f"Invalid pooling method: {method}")
+
+
+def convert_to_toeplitz(inputs: torch.Tensor) -> torch.Tensor:
+    if inputs.dim() != 1:
+        raise ValueError(f"Number of dimensions of inputs must be equal to 1 (actual={inputs.dim()}).")
+
+    num_elements = inputs.size(0)
+    if num_elements % 2 != 1:
+        raise ValueError(f"Size of inputs must be a odd number. (actual={num_elements})")
+
+    n = (num_elements + 1) // 2
+    r = num_elements // 2
+
+    output = torch.nn.functional.pad(inputs, (0, n))
+    output = output.tile(n)
+    output = output[:-n]
+    output = output.reshape(n, -1)
+    output = output[:, r:-r]
+
+    return output

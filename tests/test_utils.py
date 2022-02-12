@@ -3,7 +3,7 @@ from typing import cast
 
 import numpy.testing
 import torch
-from xallennlp.utils import flatten_dict_for_mlflow_log, masked_fft, masked_pool, str_to_timedelta
+from xallennlp.utils import convert_to_toeplitz, flatten_dict_for_mlflow_log, masked_fft, masked_pool, str_to_timedelta
 
 
 def test_flatten_dict_for_mlflow_log() -> None:
@@ -39,3 +39,11 @@ def test_masked_pool() -> None:
     desired = torch.max(inputs, dim=1)[0].numpy()
 
     numpy.testing.assert_equal(output, desired)  # type: ignore
+
+
+def test_convert_to_toeplitz() -> None:
+    inputs = torch.randn(9)
+    output = convert_to_toeplitz(inputs)
+
+    assert output.size() == (5, 5)
+    assert all(output[i, j] == output[i - 1, j - 1] for i in range(1, 5) for j in range(1, 5))
