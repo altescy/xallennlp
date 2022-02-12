@@ -3,6 +3,7 @@ from typing import Optional, Tuple, cast
 import torch
 import torch.nn.functional as F
 from allennlp.modules.seq2seq_encoders.seq2seq_encoder import Seq2SeqEncoder
+from overrides import overrides
 from xallennlp.utils import convert_to_toeplitz
 
 
@@ -115,12 +116,19 @@ class MLPMixer(Seq2SeqEncoder):
         self._layers = torch.nn.ModuleList([MixerLayer(input_dim, max_length, toeplitz) for _ in range(num_layers)])
         self._dropouts = torch.nn.ModuleList([torch.nn.Dropout(p=dropout) for _ in range(num_layers)])
 
+    @overrides
     def get_input_dim(self) -> int:
         return self._input_dim
 
+    @overrides
     def get_output_dim(self) -> int:
         return self._input_dim
 
+    @overrides
+    def is_bidirectional(self) -> bool:
+        return True
+
+    @overrides
     def forward(
         self,
         inputs: torch.Tensor,
