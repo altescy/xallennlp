@@ -2,7 +2,6 @@ from typing import Optional, Tuple, Union
 
 import torch
 from allennlp.modules.seq2seq_encoders.seq2seq_encoder import Seq2SeqEncoder
-from overrides import overrides
 
 
 @Seq2SeqEncoder.register("window_concat")
@@ -20,19 +19,15 @@ class WindowConcatEncoder(Seq2SeqEncoder):
         self._input_dim = input_dim
         self._window_size = window_size
 
-    @overrides
     def get_input_dim(self) -> int:
         return self._input_dim
 
-    @overrides
     def get_output_dim(self) -> int:
         return (sum(self._window_size) + 1) * self._input_dim
 
-    @overrides
     def is_bidirectional(self) -> bool:
         return True
 
-    @overrides
     def forward(
         self,
         inputs: torch.Tensor,
