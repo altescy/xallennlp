@@ -8,7 +8,6 @@ from allennlp.data.token_indexers.token_indexer import IndexedTokenList
 from allennlp.data.tokenizers import Token
 from allennlp.data.tokenizers.pretrained_transformer_tokenizer import PretrainedTransformerTokenizer
 from allennlp.data.vocabulary import Vocabulary
-from overrides import overrides
 
 _DEFAULT_VALUE = "THIS IS A REALLY UNLIKELY VALUE THAT HAS TO BE A STRING"
 
@@ -40,11 +39,9 @@ class PretrainedTransformerMinhashIndexer(TokenIndexer):
         self._salts = [hash(str(salt)) for salt in range(num_hashes)]
         self._tokenizer = PretrainedTransformerTokenizer(model_name, tokenizer_kwargs=tokenizer_kwargs)
 
-    @overrides
     def count_vocab_items(self, token: Token, counter: Dict[str, Dict[str, int]]) -> None:
         return
 
-    @overrides
     def tokens_to_indices(self, tokens: List[Token], vocabulary: Vocabulary) -> Dict[str, List[numpy.ndarray]]:
         wordpieces, offsets = self._tokenizer.intra_word_tokenize([self._get_feature_value(token) for token in tokens])
         vectors: List[numpy.ndarray] = []
@@ -57,7 +54,6 @@ class PretrainedTransformerMinhashIndexer(TokenIndexer):
             vectors.append(vector)
         return {"tokens": vectors}
 
-    @overrides
     def as_padded_tensor_dict(
         self, tokens: IndexedTokenList, padding_lengths: Dict[str, int]
     ) -> Dict[str, torch.Tensor]:
@@ -69,7 +65,6 @@ class PretrainedTransformerMinhashIndexer(TokenIndexer):
         )
         return {"tokens": tensor}
 
-    @overrides
     def get_empty_token_list(self) -> IndexedTokenList:
         return {"tokens": []}
 

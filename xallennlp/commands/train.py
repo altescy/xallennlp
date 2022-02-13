@@ -5,7 +5,6 @@ from logging import getLogger
 from allennlp.commands.subcommand import Subcommand
 from allennlp.commands.train import train_model
 from allennlp.common.params import Params
-from overrides import overrides
 from xallennlp.utils import get_serialization_dir
 
 logger = getLogger(__name__)
@@ -13,7 +12,6 @@ logger = getLogger(__name__)
 
 @Subcommand.register("train", exist_ok=True)
 class Train(Subcommand):
-    @overrides
     def add_subparser(
         self,
         parser: argparse._SubParsersAction,

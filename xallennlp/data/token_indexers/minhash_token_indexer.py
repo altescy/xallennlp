@@ -6,7 +6,6 @@ from allennlp.common.util import pad_sequence_to_length
 from allennlp.data.token_indexers.token_indexer import IndexedTokenList, TokenIndexer
 from allennlp.data.tokenizers import Token
 from allennlp.data.vocabulary import Vocabulary
-from overrides import overrides
 
 _DEFAULT_VALUE = "THIS IS A REALLY UNLIKELY VALUE THAT HAS TO BE A STRING"
 
@@ -32,16 +31,13 @@ class MinHashTokenIndexer(TokenIndexer):
         self._feature_name = feature_name
         self._default_value = default_value
 
-    @overrides
     def count_vocab_items(self, token: Token, counter: Dict[str, Dict[str, int]]) -> None:
         return
 
-    @overrides
     def tokens_to_indices(self, tokens: List[Token], vocabulary: Vocabulary) -> Dict[str, List[numpy.ndarray]]:
         indices: List[numpy.ndarray] = [self._get_token_embedding(token) for token in tokens]
         return {"tokens": indices}
 
-    @overrides
     def as_padded_tensor_dict(
         self, tokens: IndexedTokenList, padding_lengths: Dict[str, int]
     ) -> Dict[str, torch.Tensor]:
@@ -53,7 +49,6 @@ class MinHashTokenIndexer(TokenIndexer):
         )
         return {"tokens": tensor}
 
-    @overrides
     def get_empty_token_list(self) -> IndexedTokenList:
         return {"tokens": []}
 
