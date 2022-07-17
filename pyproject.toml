@@ -18,14 +18,15 @@ allennlp-optuna = {version = "^0.1.6", optional = true}
 fugashi = {version = "^1.1.1", optional = true, extras = ["unidic-lite"]}
 wandb = "^0.12.6"
 numpy = "^1.20.0"
+cached-path = "1.1.2"  # see: https://github.com/allenai/allennlp/issues/5666
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.4.3"
-pysen = "^0.10.1"
-black = "^21.12b0"
-flake8 = "^4.0.1"
+pysen = "^0.10.2"
+black = "^22.3.0"
 isort = "^5.10.1"
-mypy = "^0.931"
+flake8 = "^4.0.1"
+mypy = "^0.961"
 types-PyYAML = "^6.0.3"
 
 [tool.poetry.extras]
