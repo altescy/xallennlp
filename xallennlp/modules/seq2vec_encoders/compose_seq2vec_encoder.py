@@ -33,3 +33,11 @@ class ComposeSeq2VecEncoder(Seq2VecEncoder):
             output = self._feedforward(output)
 
         return output
+
+    def get_input_dim(self) -> int:
+        return self._seq2seq_encoder.get_input_dim()
+
+    def get_output_dim(self) -> int:
+        if self._feedforward is not None:
+            return int(self._feedforward.get_output_dim())  # type: ignore[no-untyped-call]
+        return self._seq2vec_encoder.get_output_dim()
