@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "xallennlp"
-version = "0.6.1"
+version = "0.6.2"
 description = "Expanded AllenNLP"
 authors = ["altescy <altescy@fastmail.com>"]
 license = "MIT License"
